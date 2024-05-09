@@ -30,8 +30,8 @@ let gbg = {
 
     ShowMapDialog: () => {
         let body = [];
-		
-		HTML.AddCssFile('gbg');
+
+        HTML.AddCssFile('gbg');
 
         HTML.Box({
             'id': 'gbgMenu',
@@ -47,109 +47,111 @@ let gbg = {
 		<button class="btn-default" onclick="gbg.fightBattle(-1)">Kill Sector</button>
 		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
 		</div>`);
-		body.push(`<p>------------</p>`);
-		body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-		body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
-		body.push(`<p>------------</p>`);
-		body.push(`<p>Rewards Earned:</p>`);
-		body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
-		body.push(`<p>Forge Points: ${gbg.fp}</p>`);
+        body.push(`<p>------------</p>`);
+        body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
+        body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
+        body.push(`<p>------------</p>`);
+        body.push(`<p>Rewards Earned:</p>`);
+        body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
+        body.push(`<p>Forge Points: ${gbg.fp}</p>`);
 
         $('#gbgMenuBody').html(body);
     },
-	
-	refreshMapDialog: () => {
-		let body = [];
-		body.push(`<div>
+
+    refreshMapDialog: () => {
+        let body = [];
+        body.push(`<div>
 		<button class="btn-default" onclick="gbg.fightBattle(1)">1 Hit</button>
 		<button class="btn-default" onclick="gbg.fightBattle(10)">10 Hits</button>
 		<button class="btn-default" onclick="gbg.fightBattle(-1)">Kill Sector</button>
 		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
 		</div>`);
-		body.push(`<p>------------</p>`);
-		body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-		body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
-		body.push(`<p>------------</p>`);
-		body.push(`<p>Rewards Earned:</p>`);
-		body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
-		body.push(`<p>Forge Points: ${gbg.fp}</p>`);
-		
-		$('#gbgMenuBody').html(body);
-	},
-	
-	diamonds: 0,
-	fp: 0,
-	losses: 0,
-	battleInSession: 0,
-	won: false,
+        body.push(`<p>------------</p>`);
+        body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
+        body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
+        body.push(`<p>------------</p>`);
+        body.push(`<p>Rewards Earned:</p>`);
+        body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
+        body.push(`<p>Forge Points: ${gbg.fp}</p>`);
+
+        $('#gbgMenuBody').html(body);
+    },
+
+    diamonds: 0,
+    fp: 0,
+    losses: 0,
+    battleInSession: 0,
+    won: false,
     currentTarget: null,
     units: [null, null, null, null, null, null, null, null],
-	changed: 0,
-	dead: 0,
+    changed: 0,
+    dead: 0,
     battlesWon: null,
     currentParticipantId: null,
     waveCount: null,
 
     fightBattle: async(n) => {
-		
+
+        /*
         if (0 == n) {
-            alert("Job Finished");
-            return;
+        alert("Job Finished");
+        return;
         }
-		
-		if (gbg.losses == 3) {
-			alert("Too many losses");
-			gbg.losses = 0;
-			return;
-		}
-		
-		// console.log("Fighting");
-		
+
+        if (gbg.losses == 3) {
+        alert("Too many losses");
+        gbg.losses = 0;
+        return;
+        }
+
+        // console.log("Fighting");
+
         if (null == gbg.currentTarget) {
-            alert("Retarget");
-            return;
+        alert("Retarget");
+        return;
         }
 
         gbg.step1();
-		
+
         gbg.step2();
 
         await gbg.delay(500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed);
 
-		if (gbg.units.includes(null)) {
-			alert("NO UNITS");
-			return; 
-		}
+        if (gbg.units.includes(null)) {
+        alert("NO UNITS");
+        return;
+        }
 
         gbg.armyRefill();
 
         if (gbg.waveCount == null) {
-            alert("WAVECOUNT NULL");
-            return;
+        alert("WAVECOUNT NULL");
+        return;
         }
-		
-		if (null == gbg.currentTarget) {
-            alert("Retarget");
-            return;
+
+        if (null == gbg.currentTarget) {
+        alert("Retarget");
+        return;
         }
 
         gbg.step3();
         await gbg.delay(300 + Math.ceil(Math.random() * 125));
         if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
-            gbg.step4();
-            await gbg.delay(300 + Math.ceil(Math.random() * 125));
+        gbg.step4();
+        await gbg.delay(300 + Math.ceil(Math.random() * 125));
         }
         await gbg.delay(400 + Math.ceil(Math.random() * 200));
-		
-		gbg.battleInSession += gbg.won;
-		gbg.losses += (!gbg.won);
-		gbg.losses *= (!gbg.won);
-		gbg.refreshMapDialog();
+
+        gbg.battleInSession += gbg.won;
+        gbg.losses += (!gbg.won);
+        gbg.losses *= (!gbg.won);
+        gbg.refreshMapDialog();
 
         gbg.waveCount = null;
-		gbg.won = false;
-		gbg.units = [null, null, null, null, null, null, null, null];
+        gbg.won = false;
+        gbg.units = [null, null, null, null, null, null, null, null];
         gbg.fightBattle(n - 1);
+         */
     },
 
     falseXHR: (data) => {
@@ -160,24 +162,148 @@ let gbg = {
         newReq.send(data);
     },
 
+    /*
     step1: () => {
-        gbg.falseXHR(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
+    gbg.falseXHR(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
     },
 
     step2: () => {
-        gbg.falseXHR(FoEproxy.blobber(reqData.step2Req()));
+    gbg.falseXHR(FoEproxy.blobber(reqData.step2Req()));
     },
 
     step3: () => {
-        gbg.falseXHR(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
+    gbg.falseXHR(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
     },
 
     step4: () => {
-        gbg.falseXHR(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
+    gbg.falseXHR(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
     },
 
     armyRefill: () => {
-        gbg.falseXHR(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
+    gbg.falseXHR(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
+    },
+     */
+
+    step1: (n) => {
+        if (0 == n) {
+            alert("Job Finished");
+            return;
+        }
+
+        if (gbg.losses == 3) {
+            alert("Too many losses");
+            gbg.losses = 0;
+            return;
+        }
+
+        // console.log("Fighting");
+
+        if (null == gbg.currentTarget) {
+            alert("Retarget");
+            return;
+        }
+
+        const newReq = new XMLHttpRequest();
+        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
+        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
+        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+
+        //newReq.send(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
+		console.log("------");
+		console.log("First Step" + new Date().getTime());
+
+        gbg.step2(n);
+    },
+
+    step2: (n) => {
+        const newReq = new XMLHttpRequest();
+        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
+        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
+        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+
+        newReq.onload = function () {
+            setTimeout(gbg.armyRefill, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n);
+        };
+
+        //newReq.send(FoEproxy.blobber(reqData.step2Req()));
+		console.log("Second Step" + new Date().getTime());
+    },
+
+    armyRefill: (n) => {
+        if (gbg.units.includes(null)) {
+            alert("NO UNITS");
+            return;
+        }
+
+        const newReq = new XMLHttpRequest();
+        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
+        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
+        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+
+        //newReq.send(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
+		console.log("Refill Step" + new Date().getTime());
+
+        gbg.step3(n);
+    },
+
+    step3: (n) => {
+        if (gbg.waveCount == null) {
+            alert("WAVECOUNT NULL");
+            return;
+        }
+
+        if (null == gbg.currentTarget) {
+            alert("Retarget");
+            return;
+        }
+
+        const newReq = new XMLHttpRequest();
+        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
+        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
+        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+
+        newReq.onload = function () {
+            if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
+                setTimeout(gbg.step4, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n);
+            } else {
+                gbg.battleInSession += gbg.won;
+                gbg.losses += (!gbg.won);
+                gbg.losses *= (!gbg.won);
+                gbg.refreshMapDialog();
+
+                gbg.waveCount = null;
+                gbg.won = false;
+                gbg.units = [null, null, null, null, null, null, null, null];
+                gbg.fightBattle(n - 1);
+                setTimeout(gbg.step1, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n - 1);
+            }
+        };
+
+        //newReq.send(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
+		console.log("Third Step" + new Date().getTime());
+    },
+
+    step4: () => {
+        const newReq = new XMLHttpRequest();
+        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
+        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
+        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+
+        newReq.onload = function () {
+            gbg.battleInSession += gbg.won;
+            gbg.losses += (!gbg.won);
+            gbg.losses *= (!gbg.won);
+            gbg.refreshMapDialog();
+
+            gbg.waveCount = null;
+            gbg.won = false;
+            gbg.units = [null, null, null, null, null, null, null, null];
+            gbg.fightBattle(n - 1);
+            setTimeout(gbg.step1, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n - 1);
+        };
+		
+		//newReq.send(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
+		console.log("Fourth Step" + new Date().getTime());
     },
 
     delay: (ms) => {
@@ -209,14 +335,14 @@ let reqData = {
 
 /*
 Grabs guild id
-*/
+ */
 FoEproxy.addHandler('GuildBattlegroundService', 'getBattleground', (data, postData) => {
     gbg.currentParticipantId = data.responseData.currentParticipantId;
 });
 
 /*
-Gets ID of province being attacked, and the number of waves in battle. 
-*/
+Gets ID of province being attacked, and the number of waves in battle.
+ */
 FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => {
     gbg.currentTarget = postData[0].requestData[0].provinceId;
     gbg.waveCount = data.responseData.length;
@@ -224,69 +350,69 @@ FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => 
 
 /*
 Continues using units with 8+ HP, replaces rest with full HP
-*/
+ */
 FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData) => {
-	let live = 0;
-	let hover = 2;
-	let rogue = 6;
-	let returnArmy = [];
+    let live = 0;
+    let hover = 2;
+    let rogue = 6;
+    let returnArmy = [];
     let rogueIDs = [];
-	let hoverIDs = [];
-	for (let unit of data.responseData.units) {
+    let hoverIDs = [];
+    for (let unit of data.responseData.units) {
         if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "rogue") {
             rogueIDs = unit.unitIds;
-		}
+        }
         if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "hover_tank") {
-			hoverIDs = unit.unitIds;
+            hoverIDs = unit.unitIds;
         }
         if (unit.is_attacking == true) {
-			if (unit.currentHitpoints >= 8) {
-				returnArmy.push(unit.unitId);
-				hover -= (unit.unitTypeId == "hover_tank");
-				rogue -= (unit.unitTypeId == "rogue");
-			}
-			live++;
-		}
+            if (unit.currentHitpoints >= 8) {
+                returnArmy.push(unit.unitId);
+                hover -= (unit.unitTypeId == "hover_tank");
+                rogue -= (unit.unitTypeId == "rogue");
+            }
+            live++;
+        }
     }
-	
-	let hovInc = 0;
-	while (hover > 0) {
-		returnArmy.push(hoverIDs[hovInc++]);
-		hover--;
-	}
-	let rogInc = 0;
-	while (rogue > 0) {
-		returnArmy.push(rogueIDs[rogInc++]);
-		rogue--;
-	}
-	
-	if (returnArmy.length > 8) {
-		returnArmy.length = 8;
-	}
-	
-	gbg.units = returnArmy;
-	gbg.changed = hovInc + rogInc;
-	gbg.dead += (8 - live);
+
+    let hovInc = 0;
+    while (hover > 0) {
+        returnArmy.push(hoverIDs[hovInc++]);
+        hover--;
+    }
+    let rogInc = 0;
+    while (rogue > 0) {
+        returnArmy.push(rogueIDs[rogInc++]);
+        rogue--;
+    }
+
+    if (returnArmy.length > 8) {
+        returnArmy.length = 8;
+    }
+
+    gbg.units = returnArmy;
+    gbg.changed = hovInc + rogInc;
+    gbg.dead += (8 - live);
 });
 
 /*
 Checks if previous battle was won
-*/
+ */
 FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) => {
     gbg.battlesWon = data.responseData.battleType.battlesWon;
-	gbg.won = (data.responseData.state.winnerBit == 1);
+    gbg.won = (data.responseData.state.winnerBit == 1);
 });
 
 /*
 Increments diamond and FP rewards
-*/
+ */
 FoEproxy.addHandler('RewardService', 'collectReward', (data, postData) => {
-	if (data.responseData[0][0].subType == "strategy_points"){
-		gbg.fp += 10;
-	}
-	if (data.responseData[0][0].subType == "premium"){
-		gbg.diamonds += 45;
-	}
+    if (data.responseData[0][0].subType == "strategy_points") {
+        gbg.fp += 10;
+    }
+    if (data.responseData[0][0].subType == "premium") {
+        gbg.diamonds += 45;
+    }
 });
 
 /*
@@ -301,8 +427,8 @@ FoEproxy.addWsHandler('GuildBattlegroundSignalsService', 'updateSignal', (data, 
 /*
 Stop attacking when approaching demolish danger.
  */
- 
- //(gbg.currentTarget == 0 && data.responseData[0].id == undefined) || 
+
+//(gbg.currentTarget == 0 && data.responseData[0].id == undefined) ||
 FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postData) => {
     if (data.responseData[0].id == gbg.currentTarget) {
         if (data.responseData[0].lockedUntil != undefined) {
