@@ -235,10 +235,9 @@ const FoEproxy = (function () {
             wsRawHandler = wsRawHandler.filter(c => c !== callback);
         },
 
-        pushFoeHelperMessage: function (method, data = null) {
-            _proxyWsAction('FoeHelperService', method, data);
-            _proxyWsAction('FoeHelperService', method, data);
-        },
+        triggerFoeHelperHandler: function (method, data = null) {
+			_proxyWsAction('FoeHelperService', method, data);
+		},
 
         addRequestHandler: function (service, method, callback) {
             // default service and method to 'all'
