@@ -227,6 +227,7 @@ let gbg = {
 
         //newReq.send(FoEproxy.blobber(reqData.step2Req()));
 		console.log("Second Step" + new Date().getTime());
+		setTimeout(gbg.armyRefill, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n);
     },
 
     armyRefill: (n) => {
@@ -264,7 +265,7 @@ let gbg = {
 
         newReq.onload = function () {
             if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
-                setTimeout(gbg.step4, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n);
+                setTimeout(gbg.step4, 300 + Math.ceil(Math.random() * 125), n);
             } else {
                 gbg.battleInSession += gbg.won;
                 gbg.losses += (!gbg.won);
@@ -274,13 +275,13 @@ let gbg = {
                 gbg.waveCount = null;
                 gbg.won = false;
                 gbg.units = [null, null, null, null, null, null, null, null];
-                gbg.fightBattle(n - 1);
-                setTimeout(gbg.step1, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n - 1);
+                setTimeout(gbg.step1, 700 + Math.ceil(Math.random() * 325), n - 1);
             }
         };
 
         //newReq.send(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
 		console.log("Third Step" + new Date().getTime());
+		setTimeout(gbg.step1, 700 + Math.ceil(Math.random() * 325), n - 1);
     },
 
     step4: () => {
@@ -298,12 +299,12 @@ let gbg = {
             gbg.waveCount = null;
             gbg.won = false;
             gbg.units = [null, null, null, null, null, null, null, null];
-            gbg.fightBattle(n - 1);
-            setTimeout(gbg.step1, 500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed, n - 1);
+            setTimeout(gbg.step1, 700 + Math.ceil(Math.random() * 325), n - 1);
         };
 		
 		//newReq.send(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
 		console.log("Fourth Step" + new Date().getTime());
+		setTimeout(gbg.step1, 700 + Math.ceil(Math.random() * 325), n - 1);
     },
 
     delay: (ms) => {
