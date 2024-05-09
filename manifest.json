@@ -1,8 +1,9 @@
 {
-	"name": "__MSG_appName__",
-	"description": "__MSG_appDesc__",
+	"name": "Dev Bot",
+	"description": "Bots GBG for FOE.",
 	"default_locale": "en",
 	"version": "3.7.0.0",
+	"version": "0.0.0.0",
 
 	"manifest_version": 3,
 	"permissions": [
@@ -23,7 +24,7 @@
 	"action": {
 		"default_icon": "images/app16.png",
 		"default_popup": "content/popup.html",
-		"default_title": "__MSG_appName__"
+		"default_title": "Testing Bot"
 	},
 
 	"icons": {
