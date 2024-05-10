@@ -23,7 +23,8 @@
 	flex-direction: column;
     justify-content: center;
     align-items: center;
-    text-align: left;
+    text-align: center;
     font-size: 120%;
 	margin-top: 10px;
 }
+
