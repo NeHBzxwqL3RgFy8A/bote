@@ -48,7 +48,7 @@ let gbg = {
 		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
 		</div>`);
 		body.push(`<div>
-		<label for="atkspd" style="display: block">0.25x - 1.00x</label>
+		<label for="atkspd" style="display: block">0.50x - 1.00x</label>
 		<input type="range" min="0.50" max="1" step="0.05" value="1.00" class="slider" id="atkspd" style="display: block; margin: 0 auto">Attack Speed Modifier</input>
 		<p>Multiplier: ${gbg.atkspdmod}</p>
 		</div>`);
@@ -75,7 +75,7 @@ let gbg = {
 		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
 		</div>`);
 		body.push(`<div>
-		<label for="atkspd" style="display: block">0.25x - 1.00x</label>
+		<label for="atkspd" style="display: block">0.50x - 1.00x</label>
 		<input type="range" min="0.50" max="1" step="0.05" value="${gbg.atkspdmod}" class="slider" id="atkspd" style="display: block; margin: 0 auto">Attack Speed Modifier</input>
 		<p>Multiplier: ${gbg.atkspdmod}</p>
 		</div>`);
@@ -102,7 +102,7 @@ let gbg = {
 		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
 		</div>`);
 		body.push(`<div>
-		<label for="atkspd" style="display: block">0.25x - 1.00x</label>
+		<label for="atkspd" style="display: block">0.50x - 1.00x</label>
 		<input type="range" min="0.50" max="1" step="0.05" value="${gbg.atkspdmod}" class="slider" id="atkspd" style="display: block; margin: 0 auto">Attack Speed Modifier</input>
 		<p>Multiplier: ${gbg.atkspdmod}</p>
 		</div>`);
