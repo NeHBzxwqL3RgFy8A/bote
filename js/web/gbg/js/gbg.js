@@ -68,9 +68,11 @@ let gbg = {
         $('#gbgMenuBody').html(body);
 		document.querySelector("#atkspd").oninput = function() {
 			gbg.atkspdmod = this.value;
+			gbg.refreshDialog();
 		};
 		document.querySelector("#race").oninput = function() {
 			gbg.racing = this.checked;
+			gbg.refreshDialog();
 		};
     },
 	
@@ -89,7 +91,7 @@ let gbg = {
 	},
 	
 	refreshDialog:() => {
-		document.getElementById("raceTF").innerHTML = `Negotiating: ${gbg.racing}`;
+		document.getElementById("raceTF").innerHTML = `Racing: ${gbg.racing}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
 		document.getElementById("dead").innerHTML = `Dead Troops: ${gbg.dead}`;
