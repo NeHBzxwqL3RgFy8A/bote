@@ -49,8 +49,8 @@ let gbg = {
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
-		<input type="checkbox" class="slider round" style="margin: 0 auto" id="nego">Attack/Negotiate</input>
-		<p id="negoTF">Negotiating: ${gbg.negotiate}</p>
+		<input type="checkbox" class="slider round" style="margin: 0 auto" id="race">Racing Y/N</input>
+		<p id="raceTF">Racing: ${gbg.racing}</p>
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
@@ -69,8 +69,8 @@ let gbg = {
 		document.querySelector("#atkspd").oninput = function() {
 			gbg.atkspdmod = this.value;
 		};
-		document.querySelector("#nego").oninput = function() {
-			gbg.negotiate = this.checked;
+		document.querySelector("#race").oninput = function() {
+			gbg.racing = this.checked;
 		};
     },
 	
@@ -78,18 +78,18 @@ let gbg = {
 		document.getElementById("oneHit").disabled = true;
 		document.getElementById("tenHit").disabled = true;
 		document.getElementById("sectorKill").disabled = true;
-		document.getElementById("nego").disabled = true;
+		document.getElementById("race").disabled = true;
 	},
 	
 	unlockDialog: () => {
 		document.getElementById("oneHit").disabled = false;
 		document.getElementById("tenHit").disabled = false;
 		document.getElementById("sectorKill").disabled = false;
-		document.getElementById("nego").disabled = false;	
+		document.getElementById("race").disabled = false;	
 	},
 	
 	refreshDialog:() => {
-		document.getElementById("negoTF").innerHTML = `Negotiating: ${gbg.negotiate}`;
+		document.getElementById("raceTF").innerHTML = `Negotiating: ${gbg.racing}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
 		document.getElementById("dead").innerHTML = `Dead Troops: ${gbg.dead}`;
@@ -97,7 +97,7 @@ let gbg = {
 		document.getElementById("fps").innerHTML = `Forge Points: ${gbg.fp}`;
 	},
 	
-	negotiate: false,
+	racing: false,
 	atkspdmod: 1,
     diamonds: 0,
     fp: 0,
@@ -114,7 +114,7 @@ let gbg = {
 
     doEncounter: (n) => {
 		
-		gbg.negotiate ? gbg.atkStep1(n) : gbg.atkStep1(n);
+		gbg.atkStep1(n);
 		
     },
 
@@ -361,7 +361,7 @@ FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postDat
 
         attackers = data.responseData[0].conquestProgress;
         for (let attacker of attackers) {
-            if (gbg.currentParticipantId == attacker.participantId && attacker.maxProgress - attacker.progress <= 25) {
+            if (gbg.currentParticipantId == attacker.participantId && attacker.maxProgress - attacker.progress <= (25 * !gbg.racing)) {
                 gbg.currentTarget = null;
             }
         }
