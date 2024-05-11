@@ -80,14 +80,14 @@ let gbg = {
 		document.getElementById("oneHit").disabled = true;
 		document.getElementById("tenHit").disabled = true;
 		document.getElementById("sectorKill").disabled = true;
-		document.getElementById("race").disabled = true;
+		// document.getElementById("race").disabled = true;
 	},
 	
 	unlockDialog: () => {
 		document.getElementById("oneHit").disabled = false;
 		document.getElementById("tenHit").disabled = false;
 		document.getElementById("sectorKill").disabled = false;
-		document.getElementById("race").disabled = false;	
+		// document.getElementById("race").disabled = false;	
 	},
 	
 	refreshDialog:() => {
