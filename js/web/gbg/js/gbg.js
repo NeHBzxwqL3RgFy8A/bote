@@ -342,7 +342,7 @@ FoEproxy.addHandler('RewardService', 'collectReward', (data, postData) => {
 Stop attacking when hand is put up.
  */
 FoEproxy.addWsHandler('GuildBattlegroundSignalsService', 'updateSignal', (data, postData) => {
-    if ((data.responseData[0].id == gbg.currentTarget) && "ignore" == data.responseData.signal) {
+    if ((data.responseData[0].id == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData[0].id == undefined)) && "ignore" == data.responseData.signal) {
         gbg.currentTarget = null;
     }
 });
@@ -353,7 +353,7 @@ Stop attacking when approaching demolish danger.
 
 //(gbg.currentTarget == 0 && data.responseData[0].id == undefined) ||
 FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postData) => {
-    if (data.responseData[0].id == gbg.currentTarget) {
+    if ((data.responseData[0].id == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData[0].id == undefined))) {
         if (data.responseData[0].lockedUntil != undefined) {
             gbg.currentTarget = null;
             return;
