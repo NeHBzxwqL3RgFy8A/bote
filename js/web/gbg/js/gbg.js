@@ -42,84 +42,62 @@ let gbg = {
         });
 
         body.push(`<div>
-		<button class="btn-default" onclick="gbg.fightBattle(1)">1 Hit</button>
-		<button class="btn-default" onclick="gbg.fightBattle(10)">10 Hits</button>
-		<button class="btn-default" onclick="gbg.fightBattle(-1)">Kill Sector</button>
-		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
+		<button class="btn-default" onclick="gbg.doEncounter(1); gbg.lockDialog();" id="oneHit">1 Hit</button>
+		<button class="btn-default" onclick="gbg.doEncounter(10); gbg.lockDialog();" id="tenHit">10 Hits</button>
+		<button class="btn-default" onclick="gbg.doEncounter(-1); gbg.lockDialog();" id="sectorKill">Kill Sector</button>
+		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.unlockDialog();" id="stop">Stop</button>
 		</div>`);
+		body.push(`<p>------------</p>`);
 		body.push(`<div>
-		<label for="atkspd" style="display: block">0.50x - 1.00x</label>
-		<input type="range" min="0.50" max="1" step="0.05" value="1.00" class="slider" id="atkspd" style="display: block; margin: 0 auto">Attack Speed Modifier</input>
-		<p>Multiplier: ${gbg.atkspdmod}</p>
+		<input type="checkbox" class="slider round" style="margin: 0 auto" id="nego">Attack/Negotiate</input>
+		<p id="negoTF">Negotiating: ${gbg.negotiate}</p>
+		</div>`);
+		body.push(`<p>------------</p>`);
+		body.push(`<div>
+		<input type="range" min="0.50" max="1" step="0.05" value="1.00" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
+		<p id="atkMult">Multiplier: ${gbg.atkspdmod}</p>
 		</div>`);
         body.push(`<p>------------</p>`);
-        body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-        body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
+        body.push(`<p id="stats">Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
+        body.push(`<p id="dead">Dead Troops: ${gbg.dead}</p>`);
         body.push(`<p>------------</p>`);
         body.push(`<p>Rewards Earned:</p>`);
-        body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
-        body.push(`<p>Forge Points: ${gbg.fp}</p>`);
+        body.push(`<p id="dias">Diamonds: ${gbg.diamonds}</p>`);
+        body.push(`<p id="fps">Forge Points: ${gbg.fp}</p>`);
 
         $('#gbgMenuBody').html(body);
 		document.querySelector("#atkspd").oninput = function() {
-        gbg.atkspdmod = this.value;
+			gbg.atkspdmod = this.value;
 		};
-    },
-
-    refreshMapDialog: () => {
-        let body = [];
-        body.push(`<div>
-		<button class="btn-default" onclick="gbg.fightBattle(1)" disabled='true'>1 Hit</button>
-		<button class="btn-default" onclick="gbg.fightBattle(10)" disabled='true'>10 Hits</button>
-		<button class="btn-default" onclick="gbg.fightBattle(-1)" disabled='true'>Kill Sector</button>
-		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
-		</div>`);
-		body.push(`<div>
-		<label for="atkspd" style="display: block">0.50x - 1.00x</label>
-		<input type="range" min="0.50" max="1" step="0.05" value="${gbg.atkspdmod}" class="slider" id="atkspd" style="display: block; margin: 0 auto">Attack Speed Modifier</input>
-		<p>Multiplier: ${gbg.atkspdmod}</p>
-		</div>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-        body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<p>Rewards Earned:</p>`);
-        body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
-        body.push(`<p>Forge Points: ${gbg.fp}</p>`);
-
-        $('#gbgMenuBody').html(body);
-		document.querySelector("#atkspd").oninput = function() {
-        gbg.atkspdmod = this.value;
+		document.querySelector("#nego").oninput = function() {
+			gbg.negotiate = this.checked;
 		};
     },
 	
-	resetMapDialog: () => {
-		let body = [];
-        body.push(`<div>
-		<button class="btn-default" onclick="gbg.fightBattle(1)">1 Hit</button>
-		<button class="btn-default" onclick="gbg.fightBattle(10)">10 Hits</button>
-		<button class="btn-default" onclick="gbg.fightBattle(-1)">Kill Sector</button>
-		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.refreshMapDialog();">Stop</button>
-		</div>`);
-		body.push(`<div>
-		<label for="atkspd" style="display: block">0.50x - 1.00x</label>
-		<input type="range" min="0.50" max="1" step="0.05" value="${gbg.atkspdmod}" class="slider" id="atkspd" style="display: block; margin: 0 auto">Attack Speed Modifier</input>
-		<p>Multiplier: ${gbg.atkspdmod}</p>
-		</div>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<p>Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-        body.push(`<p>Dead Troops: ${gbg.dead}</p>`);
-        body.push(`<p>------------</p>`);
-        body.push(`<p>Rewards Earned:</p>`);
-        body.push(`<p>Diamonds: ${gbg.diamonds}</p>`);
-        body.push(`<p>Forge Points: ${gbg.fp}</p>`);
-
-		$('#gbgMenuBody').html(body);
-		document.querySelector("#atkspd").oninput = function() {
-        gbg.atkspdmod = this.value;
-		};
+	lockDialog: () => {
+		document.getElementById("oneHit").disabled = true;
+		document.getElementById("tenHit").disabled = true;
+		document.getElementById("sectorKill").disabled = true;
+		document.getElementById("nego").disabled = true;
 	},
-
+	
+	unlockDialog: () => {
+		document.getElementById("oneHit").disabled = false;
+		document.getElementById("tenHit").disabled = false;
+		document.getElementById("sectorKill").disabled = false;
+		document.getElementById("nego").disabled = false;	
+	},
+	
+	refreshDialog:() => {
+		document.getElementById("negoTF").innerHTML = `Negotiating: ${gbg.negotiate}`;
+		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
+		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
+		document.getElementById("dead").innerHTML = `Dead Troops: ${gbg.dead}`;
+		document.getElementById("dias").innerHTML = `Diamonds: ${gbg.diamonds}`;
+		document.getElementById("fps").innerHTML = `Forge Points: ${gbg.fp}`;
+	},
+	
+	negotiate: false,
 	atkspdmod: 1,
     diamonds: 0,
     fp: 0,
@@ -134,115 +112,25 @@ let gbg = {
     currentParticipantId: null,
     waveCount: null,
 
-    fightBattle: async(n) => {
+    doEncounter: (n) => {
 		
-		gbg.step1(n);
-
-        /*
-        if (0 == n) {
-        alert("Job Finished");
-        return;
-        }
-
-        if (gbg.losses == 3) {
-        alert("Too many losses");
-        gbg.losses = 0;
-        return;
-        }
-
-        // console.log("Fighting");
-
-        if (null == gbg.currentTarget) {
-        alert("Retarget");
-        return;
-        }
-
-        gbg.step1();
-
-        gbg.step2();
-
-        await gbg.delay(500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed);
-
-        if (gbg.units.includes(null)) {
-        alert("NO UNITS");
-        return;
-        }
-
-        gbg.armyRefill();
-
-        if (gbg.waveCount == null) {
-        alert("WAVECOUNT NULL");
-        return;
-        }
-
-        if (null == gbg.currentTarget) {
-        alert("Retarget");
-        return;
-        }
-
-        gbg.step3();
-        await gbg.delay(300 + Math.ceil(Math.random() * 125));
-        if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
-        gbg.step4();
-        await gbg.delay(300 + Math.ceil(Math.random() * 125));
-        }
-        await gbg.delay(400 + Math.ceil(Math.random() * 200));
-
-        gbg.battleInSession += gbg.won;
-        gbg.losses += (!gbg.won);
-        gbg.losses *= (!gbg.won);
-        gbg.refreshMapDialog();
-
-        gbg.waveCount = null;
-        gbg.won = false;
-        gbg.units = [null, null, null, null, null, null, null, null];
-        gbg.fightBattle(n - 1);
-         */
+		gbg.negotiate ? gbg.atkStep1(n) : gbg.atkStep1(n);
+		
     },
 
-    falseXHR: (data) => {
-        const newReq = new XMLHttpRequest();
-        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
-        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
-        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
-        newReq.send(data);
-    },
-
-    /*
-    step1: () => {
-    gbg.falseXHR(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
-    },
-
-    step2: () => {
-    gbg.falseXHR(FoEproxy.blobber(reqData.step2Req()));
-    },
-
-    step3: () => {
-    gbg.falseXHR(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
-    },
-
-    step4: () => {
-    gbg.falseXHR(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
-    },
-
-    armyRefill: () => {
-    gbg.falseXHR(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
-    },
-     */
-
-    step1: (n) => {
-		gbg.refreshMapDialog();
+    atkStep1: (n) => {
+		gbg.refreshDialog();
 		
         if (0 == n) {
             alert("Job Finished");
-			gbg.resetMapDialog();
+			gbg.unlockDialog();
             return;
         }
 
         if (gbg.losses == 3) {
             alert("Too many losses");
             gbg.losses = 0;
-			gbg.resetMapDialog();
+			gbg.unlockDialog();
             return;
         }
 
@@ -250,7 +138,7 @@ let gbg = {
 
         if (null == gbg.currentTarget) {
             alert("Retarget");
-			gbg.resetMapDialog();
+			gbg.unlockDialog();
             return;
         }
 
@@ -261,10 +149,10 @@ let gbg = {
 
         newReq.send(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
 		
-        gbg.step2(n);
+        gbg.atkStep2(n);
     },
 
-    step2: (n) => {
+    atkStep2: (n) => {
         const newReq = new XMLHttpRequest();
         newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
         newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
@@ -280,7 +168,7 @@ let gbg = {
     armyRefill: (n) => {
         if (gbg.units.includes(null)) {
             alert("NO UNITS");
-			gbg.resetMapDialog();
+			gbg.unlockDialog();
             return;
         }
 
@@ -291,19 +179,19 @@ let gbg = {
 
         newReq.send(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
 
-        gbg.step3(n);
+        gbg.atkStep3(n);
     },
 
-    step3: (n) => {
+    atkStep3: (n) => {
         if (gbg.waveCount == null) {
             alert("WAVECOUNT NULL");
-			gbg.resetMapDialog();
+			gbg.unlockDialog();
             return;
         }
 
         if (null == gbg.currentTarget) {
             alert("Retarget");
-			gbg.resetMapDialog();
+			gbg.unlockDialog();
             return;
         }
 
@@ -314,7 +202,7 @@ let gbg = {
 
         newReq.onload = function () {
             if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
-                setTimeout(gbg.step4, (300 + Math.ceil(Math.random() * 125)) * gbg.atkspdmod, n);
+                setTimeout(gbg.atkStep4, (300 + Math.ceil(Math.random() * 125)) * gbg.atkspdmod, n);
             } else {
                 gbg.battleInSession += gbg.won;
                 gbg.losses += (!gbg.won);
@@ -322,14 +210,14 @@ let gbg = {
                 gbg.waveCount = null;
                 gbg.won = false;
                 gbg.units = [null, null, null, null, null, null, null, null];
-                setTimeout(gbg.step1, (700 + Math.ceil(Math.random() * 325)) * gbg.atkspdmod, n - 1);
+                setTimeout(gbg.doEncounter, (700 + Math.ceil(Math.random() * 325)) * gbg.atkspdmod, n - 1);
             }
         };
 
         newReq.send(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
     },
 
-    step4: (n) => {
+    atkStep4: (n) => {
         const newReq = new XMLHttpRequest();
         newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
         newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
@@ -342,19 +230,12 @@ let gbg = {
             gbg.waveCount = null;
             gbg.won = false;
             gbg.units = [null, null, null, null, null, null, null, null];
-            setTimeout(gbg.step1, (700 + Math.ceil(Math.random() * 325)) * gbg.atkspdmod, n - 1);
+            setTimeout(gbg.doEncounter, (700 + Math.ceil(Math.random() * 325)) * gbg.atkspdmod, n - 1);
         };
 		
 		newReq.send(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
     },
 
-    delay: (ms) => {
-        return new Promise((resolve, reject) => {
-            setTimeout(() => {
-                resolve(ms)
-            }, ms)
-        })
-    },
 };
 
 let reqData = {
