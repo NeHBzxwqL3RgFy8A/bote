@@ -113,6 +113,8 @@ let gbg = {
     battlesWon: null,
     currentParticipantId: null,
     waveCount: null,
+	attritionGained: 0, 
+	attritionStart: null,
 
     doEncounter: (n) => {
 		
@@ -368,4 +370,15 @@ FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postDat
             }
         }
     }
+});
+
+/*
+Grabs attrition data for player. 
+*/
+FoEproxy.addHandler('GuildBattlegroundService', 'getPlayerParticipant', (data, postData) => {
+	if (gbg.attritionStart == null) {
+		gbg.attritionStart = data.responseData.attrition.level;
+	} else {
+		gbg.attritionGained = data.responseData.attrition.level - gbg.attritionStart;
+	}
 });
