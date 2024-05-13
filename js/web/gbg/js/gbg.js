@@ -348,7 +348,7 @@ FoEproxy.addHandler('RewardService', 'collectReward', (data, postData) => {
 Stop attacking when hand is put up.
  */
 FoEproxy.addWsHandler('GuildBattlegroundSignalsService', 'updateSignal', (data, postData) => {
-    if ((data.responseData[0].id == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData[0].id == undefined)) && "ignore" == data.responseData.signal) {
+    if ((data.responseData.provinceId == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData.provinceId == undefined)) && "ignore" == data.responseData.signal) {
         gbg.currentTarget = null;
     }
 });
