@@ -52,6 +52,10 @@ let gbg = {
 		<input type="checkbox" class="slider round" style="margin: 0 auto" id="race">Racing Y/N</input>
 		<p id="raceTF">Racing: ${gbg.racing}</p>
 		</div>`);
+		body.push(`<div>
+		<input type="checkbox" class="slider round" style="margin: 0 auto" id="demolish">Holding @200 Y/N</input>
+		<p id="holdingTF">Holding: ${gbg.holding}</p>
+		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
 		<input type="range" min="0.50" max="1" step="0.05" value="1.00" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
@@ -75,6 +79,10 @@ let gbg = {
 			gbg.racing = this.checked;
 			gbg.refreshDialog();
 		};
+		document.querySelector("#demolish").oninput = function() {
+			gbg.holding = this.checked;
+			gbg.refreshDialog();
+		};
     },
 	
 	lockDialog: () => {
@@ -93,6 +101,7 @@ let gbg = {
 	
 	refreshDialog:() => {
 		document.getElementById("raceTF").innerHTML = `Racing: ${gbg.racing}`;
+		document.getElementById("holdingTF").innerHTML = `Racing: ${gbg.racing}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
 		document.getElementById("attr").innerHTML = `Attrition Gained: ${gbg.attritionGained}`;
@@ -102,6 +111,7 @@ let gbg = {
 	},
 	
 	racing: false,
+	holding: false,
 	atkspdmod: 1,
     diamonds: 0,
     fp: 0,
@@ -367,8 +377,14 @@ FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postDat
 
         attackers = data.responseData[0].conquestProgress;
         for (let attacker of attackers) {
-            if (gbg.currentParticipantId == attacker.participantId && attacker.maxProgress - attacker.progress <= (25 * !gbg.racing)) {
-                gbg.currentTarget = null;
+            if (gbg.currentParticipantId == attacker.participantId) {
+				if (!gbg.holding && attacker.maxProgress - attacker.progress <= (25 * !gbg.racing)) {
+					gbg.currentTarget = null;
+					return;
+				} else if (gbg.holding && !(attacker.progress <= 200 || gbg.racing)) {
+					gbg.currentTarget = null;
+					return;
+				}
             }
         }
     }
