@@ -59,7 +59,7 @@ let gbg = {
 		</div>`);
         body.push(`<p>------------</p>`);
         body.push(`<p id="stats">Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}</p>`);
-		body.push(`<p id="attr">Attrition gained: ${gbg.attritionGained}</p>`);
+		body.push(`<p id="attr">Attrition Gained: ${gbg.attritionGained}</p>`);
         body.push(`<p id="dead">Dead Troops: ${gbg.dead}</p>`);
         body.push(`<p>------------</p>`);
         body.push(`<p>Rewards Earned:</p>`);
@@ -95,7 +95,7 @@ let gbg = {
 		document.getElementById("raceTF").innerHTML = `Racing: ${gbg.racing}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
-		document.getElementById("attr").innerHTML = `Attrition gained: ${gbg.attritionGained}`;
+		document.getElementById("attr").innerHTML = `Attrition Gained: ${gbg.attritionGained}`;
 		document.getElementById("dead").innerHTML = `Dead Troops: ${gbg.dead}`;
 		document.getElementById("dias").innerHTML = `Diamonds: ${gbg.diamonds}`;
 		document.getElementById("fps").innerHTML = `Forge Points: ${gbg.fp}`;
