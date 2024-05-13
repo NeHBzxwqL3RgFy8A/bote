@@ -49,8 +49,8 @@ let gbg = {
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
-		<input type="checkbox" class="slider round" style="margin: 0 auto" id="race">Racing Y/N</input>
-		<p id="raceTF">Racing: ${gbg.racing}</p>
+		<input type="checkbox" class="slider round" style="margin: 0 auto" id="race">Full Take Y/N</input>
+		<p id="raceTF">Full Take: ${gbg.racing}</p>
 		</div>`);
 		body.push(`<div>
 		<input type="checkbox" class="slider round" style="margin: 0 auto" id="demolish">Holding @200 Y/N</input>
@@ -100,8 +100,8 @@ let gbg = {
 	},
 	
 	refreshDialog:() => {
-		document.getElementById("raceTF").innerHTML = `Racing: ${gbg.racing}`;
-		document.getElementById("holdingTF").innerHTML = `Racing: ${gbg.racing}`;
+		document.getElementById("raceTF").innerHTML = `Full Take: ${gbg.racing}`;
+		document.getElementById("holdingTF").innerHTML = `Holding: ${gbg.holding}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
 		document.getElementById("attr").innerHTML = `Attrition Gained: ${gbg.attritionGained}`;
