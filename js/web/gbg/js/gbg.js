@@ -45,7 +45,7 @@ let gbg = {
 		<button class="btn-default" onclick="gbg.doEncounter(1); gbg.lockDialog();" id="oneHit">1 Hit</button>
 		<button class="btn-default" onclick="gbg.doEncounter(10); gbg.lockDialog();" id="tenHit">10 Hits</button>
 		<button class="btn-default" onclick="gbg.doEncounter(-1); gbg.lockDialog();" id="sectorKill">Kill Sector</button>
-		<button class="btn-default" onclick="gbg.currentTarget = null; gbg.unlockDialog();" id="stop">Stop</button>
+		<button class="btn-default" onclick="gbg.stop = true; gbg.unlockDialog(); gbg.refreshDialog();" id="stop">Stop</button>
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
@@ -118,7 +118,8 @@ let gbg = {
     losses: 0,
     battleInSession: 0,
     won: false,
-    currentTarget: null,
+    currentTarget: null, 
+	stop: false,
     units: [null, null, null, null, null, null, null, null],
     changed: 0,
     dead: 0,
@@ -137,6 +138,10 @@ let gbg = {
     atkStep1: (n) => {
 		gbg.refreshDialog();
 		
+		if (gbg.stop) {
+			gbg.currentTarget = null;
+		}
+		
         if (0 == n) {
             alert("Job Finished");
 			gbg.unlockDialog();
@@ -150,9 +155,8 @@ let gbg = {
             return;
         }
 
-        // console.log("Fighting");
-
         if (null == gbg.currentTarget) {
+			gbg.stop = false; 
             alert("Retarget");
 			gbg.unlockDialog();
             return;
@@ -206,6 +210,7 @@ let gbg = {
         }
 
         if (null == gbg.currentTarget) {
+			gbg.stop = false; 
             alert("Retarget");
 			gbg.unlockDialog();
             return;
@@ -359,7 +364,7 @@ Stop attacking when hand is put up.
  */
 FoEproxy.addWsHandler('GuildBattlegroundSignalsService', 'updateSignal', (data, postData) => {
     if ((data.responseData.provinceId == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData.provinceId == undefined)) && "ignore" == data.responseData.signal) {
-        gbg.currentTarget = null;
+        gbg.stop = true;
     }
 });
 
@@ -371,7 +376,7 @@ Stop attacking when approaching demolish danger.
 FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postData) => {
     if ((data.responseData[0].id == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData[0].id == undefined))) {
         if (data.responseData[0].lockedUntil != undefined) {
-            gbg.currentTarget = null;
+            gbg.stop = true;
             return;
         }
 
@@ -379,10 +384,10 @@ FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postDat
         for (let attacker of attackers) {
             if (gbg.currentParticipantId == attacker.participantId) {
 				if (!gbg.holding && attacker.maxProgress - attacker.progress <= (25 * !gbg.racing)) {
-					gbg.currentTarget = null;
+					gbg.stop = true;
 					return;
 				} else if (gbg.holding && !(attacker.progress <= 200 || gbg.racing)) {
-					gbg.currentTarget = null;
+					gbg.stop = true;
 					return;
 				}
             }
