@@ -58,7 +58,7 @@ let gbg = {
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
-		<input type="range" min="0.50" max="1" step="0.05" value="1.00" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
+		<input type="range" min="0.25" max="1" step="0.05" value="1.00" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
 		<p id="atkMult">Multiplier: ${gbg.atkspdmod}</p>
 		</div>`);
         body.push(`<p>------------</p>`);
