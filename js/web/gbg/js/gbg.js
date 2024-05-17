@@ -42,10 +42,10 @@ let gbg = {
         });
 
         body.push(`<div>
-		<button class="btn-default" onclick="gbg.doEncounter(1); gbg.lockDialog();" id="oneHit">1 Hit</button>
-		<button class="btn-default" onclick="gbg.doEncounter(10); gbg.lockDialog();" id="tenHit">10 Hits</button>
-		<button class="btn-default" onclick="gbg.doEncounter(-1); gbg.lockDialog();" id="sectorKill">Kill Sector</button>
-		<button class="btn-default" onclick="gbg.stop = true; gbg.refreshDialog(); gbg.unlockDialog();" id="stop">Stop</button>
+		<button class="btn-default" onclick="gbg.lockDialog(); gbg.doEncounter(1);" id="oneHit">1 Hit</button>
+		<button class="btn-default" onclick="gbg.lockDialog(); gbg.doEncounter(10);" id="tenHit">10 Hits</button>
+		<button class="btn-default" onclick="gbg.lockDialog(); gbg.doEncounter(-1);" id="sectorKill">Kill Sector</button>
+		<button class="btn-default" onclick="gbg.stop = true;" id="stop" disabled>Stop</button>
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
@@ -90,6 +90,7 @@ let gbg = {
 		document.getElementById("tenHit").disabled = true;
 		document.getElementById("sectorKill").disabled = true;
 		document.getElementById("stop").disabled = false;
+		gbg.refreshDialog();
 	},
 	
 	unlockDialog: () => {
@@ -97,6 +98,7 @@ let gbg = {
 		document.getElementById("tenHit").disabled = false;
 		document.getElementById("sectorKill").disabled = false;
 		document.getElementById("stop").disabled = true;
+		gbg.refreshDialog();
 	},
 	
 	refreshDialog:() => {
