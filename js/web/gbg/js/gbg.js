@@ -45,7 +45,7 @@ let gbg = {
 		<button class="btn-default" onclick="gbg.doEncounter(1); gbg.lockDialog();" id="oneHit">1 Hit</button>
 		<button class="btn-default" onclick="gbg.doEncounter(10); gbg.lockDialog();" id="tenHit">10 Hits</button>
 		<button class="btn-default" onclick="gbg.doEncounter(-1); gbg.lockDialog();" id="sectorKill">Kill Sector</button>
-		<button class="btn-default" onclick="gbg.stop = true; gbg.unlockDialog(); gbg.refreshDialog();" id="stop">Stop</button>
+		<button class="btn-default" onclick="gbg.stop = true; gbg.refreshDialog(); gbg.unlockDialog();" id="stop">Stop</button>
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
@@ -89,14 +89,14 @@ let gbg = {
 		document.getElementById("oneHit").disabled = true;
 		document.getElementById("tenHit").disabled = true;
 		document.getElementById("sectorKill").disabled = true;
-		// document.getElementById("race").disabled = true;
+		document.getElementById("stop").disabled = false;
 	},
 	
 	unlockDialog: () => {
 		document.getElementById("oneHit").disabled = false;
 		document.getElementById("tenHit").disabled = false;
 		document.getElementById("sectorKill").disabled = false;
-		// document.getElementById("race").disabled = false;	
+		document.getElementById("stop").disabled = true;
 	},
 	
 	refreshDialog:() => {
@@ -143,22 +143,22 @@ let gbg = {
 		}
 		
         if (0 == n) {
-            alert("Job Finished");
 			gbg.unlockDialog();
+            alert("Job Finished");
             return;
         }
 
         if (gbg.losses == 3) {
+			gbg.unlockDialog();
             alert("Too many losses");
             gbg.losses = 0;
-			gbg.unlockDialog();
             return;
         }
 
         if (null == gbg.currentTarget) {
 			gbg.stop = false; 
-            alert("Retarget");
 			gbg.unlockDialog();
+            alert("Retarget");
             return;
         }
 
@@ -187,8 +187,8 @@ let gbg = {
 
     armyRefill: (n) => {
         if (gbg.units.includes(null)) {
-            alert("NO UNITS");
-			gbg.unlockDialog();
+            gbg.unlockDialog();
+			alert("NO UNITS");
             return;
         }
 
@@ -203,16 +203,20 @@ let gbg = {
     },
 
     atkStep3: (n) => {
+		if (gbg.stop) {
+			gbg.currentTarget = null;
+		}
+		
         if (gbg.waveCount == null) {
-            alert("WAVECOUNT NULL");
 			gbg.unlockDialog();
+            alert("WAVECOUNT NULL");
             return;
         }
 
         if (null == gbg.currentTarget) {
-			gbg.stop = false; 
-            alert("Retarget");
+			gbg.stop = false;
 			gbg.unlockDialog();
+            alert("Retarget");
             return;
         }
 
@@ -371,8 +375,6 @@ FoEproxy.addWsHandler('GuildBattlegroundSignalsService', 'updateSignal', (data, 
 /*
 Stop attacking when approaching demolish danger.
  */
-
-//(gbg.currentTarget == 0 && data.responseData[0].id == undefined) ||
 FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postData) => {
     if ((data.responseData[0].id == gbg.currentTarget || (gbg.currentTarget == 0 && data.responseData[0].id == undefined))) {
         if (data.responseData[0].lockedUntil != undefined) {
