@@ -126,6 +126,7 @@ let gbg = {
     changed: 0,
     dead: 0,
     battlesWon: null,
+	era: null,
     currentParticipantId: null,
     waveCount: null,
 	attritionGained: 0, 
@@ -169,9 +170,11 @@ let gbg = {
         newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
+		newReq.onload = function () {
+			gbg.atkStep2(n);
+		};
+
         newReq.send(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
-		
-        gbg.atkStep2(n);
     },
 
     atkStep2: (n) => {
@@ -198,10 +201,12 @@ let gbg = {
         newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
         newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+		
+		newReq.onload = function () {
+			gbg.atkStep3(n);
+		};
 
         newReq.send(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
-
-        gbg.atkStep3(n);
     },
 
     atkStep3: (n) => {
@@ -229,7 +234,7 @@ let gbg = {
 
         newReq.onload = function () {
             if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
-                setTimeout(gbg.atkStep4, (300 + Math.ceil(Math.random() * 125)) * gbg.atkspdmod, n);
+                setTimeout(gbg.atkStep4, (300 + Math.ceil(Math.random() * 200)) * gbg.atkspdmod, n);
             } else {
                 gbg.battleInSession += gbg.won;
                 gbg.losses += (!gbg.won);
@@ -237,7 +242,7 @@ let gbg = {
                 gbg.waveCount = null;
                 gbg.won = false;
                 gbg.units = [null, null, null, null, null, null, null, null];
-                setTimeout(gbg.doEncounter, (700 + Math.ceil(Math.random() * 325)) * gbg.atkspdmod, n - 1);
+                setTimeout(gbg.doEncounter, (500 + Math.ceil(Math.random() * 250)) * gbg.atkspdmod, n - 1);
             }
         };
 
@@ -245,6 +250,18 @@ let gbg = {
     },
 
     atkStep4: (n) => {
+		if (gbg.battlesWon == null) {
+			gbg.unlockDialog();
+            alert("BATTLESWON NULL");
+            return;
+        }
+		
+		if (gbg.era == null) {
+			gbg.unlockDialog();
+            alert("ERA NULL");
+            return;
+        }
+		
         const newReq = new XMLHttpRequest();
         newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
         newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
@@ -257,10 +274,10 @@ let gbg = {
             gbg.waveCount = null;
             gbg.won = false;
             gbg.units = [null, null, null, null, null, null, null, null];
-            setTimeout(gbg.doEncounter, (700 + Math.ceil(Math.random() * 325)) * gbg.atkspdmod, n - 1);
+            setTimeout(gbg.doEncounter, (500 + Math.ceil(Math.random() * 250)) * gbg.atkspdmod, n - 1);
         };
 		
-		newReq.send(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon)));
+		newReq.send(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon, gbg.era)));
     },
 
 };
@@ -275,8 +292,8 @@ let reqData = {
     step3Req: (id) => {
         return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundBattleType","attackerPlayerId":0,"defenderPlayerId":0,"type":"battleground","currentWaveId":0,"totalWaves":0,"provinceId":${id},"battlesWon":0},true],"requestClass":"BattlefieldService","requestMethod":"startByBattleType","requestId":7}]`;
     },
-    step4Req: (id, won) => {
-        return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundBattleType","attackerPlayerId":0,"defenderPlayerId":0,"era":"FutureEra","type":"battleground","currentWaveId":0,"totalWaves":2,"provinceId":${id},"battlesWon":${won}},true],"requestClass":"BattlefieldService","requestMethod":"startByBattleType","requestId":7}]`;
+    step4Req: (id, won, era) => {
+        return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundBattleType","attackerPlayerId":0,"defenderPlayerId":0,"era":"${era}","type":"battleground","currentWaveId":0,"totalWaves":2,"provinceId":${id},"battlesWon":${won}},true],"requestClass":"BattlefieldService","requestMethod":"startByBattleType","requestId":7}]`;
     },
     armyRefillReq: (units) => {
         return `[{"__class__":"ServerRequest","requestData":[[{"__class__":"ArmyPool","units":[${units[0]},${units[1]},${units[2]},${units[3]},${units[4]},${units[5]},${units[6]},${units[7]}],"type":"attacking"},{"__class__":"ArmyPool","units":[],"type":"defending"},{"__class__":"ArmyPool","units":[],"type":"arena_defending"}],{"__class__":"ArmyContext","battleType":"battleground"}],"requestClass":"ArmyUnitManagementService","requestMethod":"updatePools","requestId":7}]`;
@@ -351,6 +368,7 @@ Checks if previous battle was won
 FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) => {
     gbg.battlesWon = data.responseData.battleType.battlesWon;
     gbg.won = (data.responseData.state.winnerBit == 1);
+	gbg.era = data.responseData.battleType.era;
 });
 
 /*
