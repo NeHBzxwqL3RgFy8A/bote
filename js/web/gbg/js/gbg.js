@@ -210,20 +210,9 @@ let gbg = {
     },
 
     atkStep3: (n) => {
-		if (gbg.stop) {
-			gbg.currentTarget = null;
-		}
-		
         if (gbg.waveCount == null) {
 			gbg.unlockDialog();
             alert("WAVECOUNT NULL");
-            return;
-        }
-
-        if (null == gbg.currentTarget) {
-			gbg.stop = false;
-			gbg.unlockDialog();
-            alert("Retarget");
             return;
         }
 
@@ -320,45 +309,74 @@ Continues using units with 8+ HP, replaces rest with full HP
  */
 FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData) => {
     let live = 0;
-    let hover = 2;
     let rogue = 6;
+	let tur = 1;
+	let sub = 1;
+	//let eel = 8;
     let returnArmy = [];
     let rogueIDs = [];
-    let hoverIDs = [];
+	let turIDs = [];
+	let subIDs = [];
+	//let eelIDs = [];
     for (let unit of data.responseData.units) {
-        if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "rogue") {
+       
+		if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "rogue") {
             rogueIDs = unit.unitIds;
         }
-        if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "hover_tank") {
-            hoverIDs = unit.unitIds;
+        if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "turturret") {
+            turIDs = unit.unitIds;
         }
+		if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "sub_cruiser") {
+			subIDs = unit.unitIds; 
+		}
+		/*
+		if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "hydroelectric_eel") {
+			eelIDs = unit.unitIds;
+		}
+		*/
         if (unit.is_attacking == true) {
             if (unit.currentHitpoints >= 8) {
                 returnArmy.push(unit.unitId);
-                hover -= (unit.unitTypeId == "hover_tank");
+                tur -= (unit.unitTypeId == "turturret");
+				sub -= (unit.unitTypeId == "sub_cruiser");
                 rogue -= (unit.unitTypeId == "rogue");
+				// eel -= (unit.unitTypeId == "hydroelectric_eel");
             }
             live++;
         }
     }
-
-    let hovInc = 0;
-    while (hover > 0) {
-        returnArmy.push(hoverIDs[hovInc++]);
-        hover--;
+	
+    let subInc = 0;
+    while (sub > 0) {
+        returnArmy.push(subIDs[subInc++]);
+        sub--;
     }
+	let turInc = 0;
+	while (tur > 0) {
+		returnArmy.push(turIDs[turInc++]);
+		tur--;
+	}
     let rogInc = 0;
     while (rogue > 0) {
         returnArmy.push(rogueIDs[rogInc++]);
         rogue--;
     }
 
+	/*
+	let eelInc = 0;
+	while (eel > 0) {
+		returnArmy.push(eelIDs[eelInc++]);
+		eel--;
+	}
+	*/
+
     if (returnArmy.length > 8) {
         returnArmy.length = 8;
     }
 
     gbg.units = returnArmy;
-    gbg.changed = hovInc + rogInc;
+    gbg.changed = subInc + turInc + rogInc;
+	//gbg.changed = eelInc;
     gbg.dead += (8 - live);
 });
 
