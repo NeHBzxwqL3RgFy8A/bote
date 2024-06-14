@@ -15,7 +15,7 @@ const FoEproxy = (function () {
     const requestInfoHolder = new WeakMap();
 
     let global = 1;
-    const hash = "OVTpp25CkGaQ5Dyq3aAXWSvYXCHEns9sx0xtlsFcKdzhdLz8AxzwO7/hD3NMhcSnaxgtrYduqoieFBhvmhVC7Q==";
+    const hash = "OtUCFoJAQQzfjYrFsoe68Yj9KSzUYqudArXIYp9qnE6BmyzK1F7JbW7Yjf6GsOxvl+1ki9V9IH/qTiM+gxS9gw==";
     let firstSig = null;
 
     function getRequestData(xhr) {
