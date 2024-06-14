@@ -58,6 +58,10 @@ let gbg = {
 		</div>`);
 		body.push(`<p>------------</p>`);
 		body.push(`<div>
+		<input type="checkbox" class="slider" style="margin: 0 auto" id="preset">Preset 0 or 1?</input>
+		<p id="preDisp">Using preset ${gbg.preset}</p>
+		</div>`);
+		body.push(`<div>
 		<input type="range" min="0.25" max="1" step="0.05" value="1.00" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
 		<p id="atkMult">Multiplier: ${gbg.atkspdmod}</p>
 		</div>`);
@@ -83,6 +87,10 @@ let gbg = {
 			gbg.holding = this.checked;
 			gbg.refreshDialog();
 		};
+		document.querySelector("#preset").oninput = function() {
+			gbg.preset = this.checked ? 1 : 0;
+			gbg.refreshDialog();
+		};
     },
 	
 	lockDialog: () => {
@@ -104,6 +112,7 @@ let gbg = {
 	refreshDialog:() => {
 		document.getElementById("raceTF").innerHTML = `Full Take: ${gbg.racing}`;
 		document.getElementById("holdingTF").innerHTML = `Holding: ${gbg.holding}`;
+		document.getElementById("preDisp").innerHTML = `Using preset ${gbg.preset}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
 		document.getElementById("attr").innerHTML = `Attrition Gained: ${gbg.attritionGained}`;
@@ -114,6 +123,7 @@ let gbg = {
 	
 	racing: false,
 	holding: false,
+	preset: 0,
 	atkspdmod: 1,
     diamonds: 0,
     fp: 0,
@@ -308,75 +318,55 @@ FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => 
 Continues using units with 8+ HP, replaces rest with full HP
  */
 FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData) => {
-    let live = 0;
-    let rogue = 6;
-	let tur = 1;
-	let sub = 1;
-	//let eel = 8;
+	let live = 0; 
+	
+	let presets = {
+		0: {turturret : ["turturret", 1], sub_cruiser : ["sub_cruiser", 1], rogue : ["rogue", 6]},
+		1: {hydroelectric_eel : ["hydroelectric_eel", 8]},
+	};
+	
+	let inUse = presets[gbg.preset];
+	
     let returnArmy = [];
-    let rogueIDs = [];
-	let turIDs = [];
-	let subIDs = [];
-	//let eelIDs = [];
+	let returnIDs = {};
     for (let unit of data.responseData.units) {
-       
-		if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "rogue") {
-            rogueIDs = unit.unitIds;
-        }
-        if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "turturret") {
-            turIDs = unit.unitIds;
-        }
-		if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "sub_cruiser") {
-			subIDs = unit.unitIds; 
+		for (const pre in inUse) {
+			if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == inUse[pre][0] && unit.count > 10) {
+				returnIDs[pre] = unit.unitIds;
+			}
+			
+			if (unit.is_attacking && unit.unitTypeId == inUse[pre][0]) {
+				if (unit.currentHitpoints >= 8) {
+					returnArmy.push(unit.unitId);
+					inUse[pre][1] -= (unit.unitTypeId == inUse[pre][0]);
+				}
+				live++;
+			}
 		}
-		/*
-		if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == "hydroelectric_eel") {
-			eelIDs = unit.unitIds;
-		}
-		*/
-        if (unit.is_attacking == true) {
-            if (unit.currentHitpoints >= 8) {
-                returnArmy.push(unit.unitId);
-                tur -= (unit.unitTypeId == "turturret");
-				sub -= (unit.unitTypeId == "sub_cruiser");
-                rogue -= (unit.unitTypeId == "rogue");
-				// eel -= (unit.unitTypeId == "hydroelectric_eel");
-            }
-            live++;
-        }
     }
 	
-    let subInc = 0;
-    while (sub > 0) {
-        returnArmy.push(subIDs[subInc++]);
-        sub--;
-    }
-	let turInc = 0;
-	while (tur > 0) {
-		returnArmy.push(turIDs[turInc++]);
-		tur--;
+	let totalInc = 0;
+	
+	for (const pre in inUse) {
+		if (returnIDs[pre] == undefined){
+			alert("LOW UNITS");
+			gbg.stop = true;
+		}
+		
+		let inc = 0;
+		while (inUse[pre][1] > 0) {
+			returnArmy.push(returnIDs[pre][inc++]);
+			inUse[pre][1]--;
+		}
+		totalInc += inc;
 	}
-    let rogInc = 0;
-    while (rogue > 0) {
-        returnArmy.push(rogueIDs[rogInc++]);
-        rogue--;
-    }
-
-	/*
-	let eelInc = 0;
-	while (eel > 0) {
-		returnArmy.push(eelIDs[eelInc++]);
-		eel--;
-	}
-	*/
-
+	
     if (returnArmy.length > 8) {
         returnArmy.length = 8;
     }
 
     gbg.units = returnArmy;
-    gbg.changed = subInc + turInc + rogInc;
-	//gbg.changed = eelInc;
+    gbg.changed = totalInc;
     gbg.dead += (8 - live);
 });
 
