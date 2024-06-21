@@ -16,7 +16,7 @@ const FoEproxy = (function () {
 
     let global = 1;
 
-    const hash = "OtUCFoJAQQzfjYrFsoe68Yj9KSzUYqudArXIYp9qnE6BmyzK1F7JbW7Yjf6GsOxvl+1ki9V9IH/qTiM+gxS9gw==" ;
+    const hash = "zdho5u54XXKKY1L7DUendtHn70z+iRnBxox16zJqhZdh7tsAw5amN0gtaKNEOoGscDiFgO2rDIsEYWDQ2VWxQg==";
     let firstSig = null;
 
     function getRequestData(xhr) {

@@ -57,10 +57,12 @@ let gbg = {
 		<p id="holdingTF">Holding: ${gbg.holding}</p>
 		</div>`);
 		body.push(`<p>------------</p>`);
+		/*
 		body.push(`<div>
 		<input type="checkbox" class="slider" style="margin: 0 auto" id="preset">Preset 0 or 1?</input>
 		<p id="preDisp">Using preset ${gbg.preset}</p>
 		</div>`);
+		*/
 		body.push(`<div>
 		<input type="range" min="0.25" max="1" step="0.05" value="1.00" class="slider" style="display: block; margin: 0 auto" id="atkspd">Attack Speed Modifier</input>
 		<p id="atkMult">Multiplier: ${gbg.atkspdmod}</p>
@@ -87,10 +89,12 @@ let gbg = {
 			gbg.holding = this.checked;
 			gbg.refreshDialog();
 		};
+		/*
 		document.querySelector("#preset").oninput = function() {
 			gbg.preset = this.checked ? 1 : 0;
 			gbg.refreshDialog();
 		};
+		*/
     },
 	
 	lockDialog: () => {
@@ -112,7 +116,7 @@ let gbg = {
 	refreshDialog:() => {
 		document.getElementById("raceTF").innerHTML = `Full Take: ${gbg.racing}`;
 		document.getElementById("holdingTF").innerHTML = `Holding: ${gbg.holding}`;
-		document.getElementById("preDisp").innerHTML = `Using preset ${gbg.preset}`;
+		//document.getElementById("preDisp").innerHTML = `Using preset ${gbg.preset}`;
 		document.getElementById("atkMult").innerHTML = `Multiplier: ${gbg.atkspdmod}`;
 		document.getElementById("stats").innerHTML = `Current Target: ${gbg.currentTarget}  |  Battles Won: ${gbg.battleInSession}  |  Losses: ${gbg.losses}`;
 		document.getElementById("attr").innerHTML = `Attrition Gained: ${gbg.attritionGained}`;
@@ -123,7 +127,7 @@ let gbg = {
 	
 	racing: false,
 	holding: false,
-	preset: 0,
+	//preset: 0,
 	atkspdmod: 1,
     diamonds: 0,
     fp: 0,
@@ -132,8 +136,9 @@ let gbg = {
     won: false,
     currentTarget: null, 
 	stop: false,
+	templateId : null, 
+	template : null,
     units: [null, null, null, null, null, null, null, null],
-    changed: 0,
     dead: 0,
     battlesWon: null,
 	era: null,
@@ -185,6 +190,8 @@ let gbg = {
 		};
 
         newReq.send(FoEproxy.blobber(reqData.step1Req(gbg.currentTarget)));
+		
+		return;
     },
 
     atkStep2: (n) => {
@@ -194,16 +201,48 @@ let gbg = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            setTimeout(gbg.armyRefill, (500 + Math.ceil(Math.random() * 250) + (100 + Math.ceil(Math.random() * 20)) * gbg.changed) * gbg.atkspdmod, n);
+            setTimeout(gbg.setPreset, (350 + Math.ceil(Math.random() * 250)) * gbg.atkspdmod, n);
         };
 
         newReq.send(FoEproxy.blobber(reqData.step2Req()));
+		
+		return;
     },
+	
+	setPreset: (n) => {
+		if (gbg.template == null || gbg.templateId == null) {
+			gbg.unlockDialog();
+			alert("NO TEMPLATE");
+			throw '';
+			return;
+		}
+		
+		if (gbg.units.includes(null)) {
+            gbg.unlockDialog();
+			alert("NO UNITS");
+			throw '';
+            return;
+        }
+		
+		const newReq = new XMLHttpRequest();
+        newReq.open("POST", "https://us9.forgeofempires.com/game/json?h=" + FoEproxy.json);
+        newReq.setRequestHeader("Client-Identification", FoEproxy.ClientIdentification);
+        newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
+		
+		newReq.onload = function () {
+			gbg.armyRefill(n);
+		};
+		
+		newReq.send(FoEproxy.blobber(reqData.setPresetReq(gbg.templateId, gbg.template)));
+		
+		return;
+	},
 
     armyRefill: (n) => {
         if (gbg.units.includes(null)) {
             gbg.unlockDialog();
 			alert("NO UNITS");
+			throw '';
             return;
         }
 
@@ -217,12 +256,15 @@ let gbg = {
 		};
 
         newReq.send(FoEproxy.blobber(reqData.armyRefillReq(gbg.units)));
+		
+		return;
     },
 
     atkStep3: (n) => {
         if (gbg.waveCount == null) {
 			gbg.unlockDialog();
             alert("WAVECOUNT NULL");
+			throw '';
             return;
         }
 
@@ -232,8 +274,8 @@ let gbg = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            if (gbg.waveCount == 2 && gbg.won && gbg.currentTarget != null) {
-                setTimeout(gbg.atkStep4, (300 + Math.ceil(Math.random() * 200)) * gbg.atkspdmod, n);
+            if (gbg.waveCount == 2 && gbg.won) {
+                setTimeout(gbg.atkStep4, (250 + Math.ceil(Math.random() * 150)) * gbg.atkspdmod, n);
             } else {
                 gbg.battleInSession += gbg.won;
                 gbg.losses += (!gbg.won);
@@ -241,24 +283,27 @@ let gbg = {
                 gbg.waveCount = null;
                 gbg.won = false;
                 gbg.units = [null, null, null, null, null, null, null, null];
-                setTimeout(gbg.doEncounter, (500 + Math.ceil(Math.random() * 250)) * gbg.atkspdmod, n - 1);
+                setTimeout(gbg.doEncounter, (400 + Math.ceil(Math.random() * 200)) * gbg.atkspdmod, n - 1);
             }
         };
 
         newReq.send(FoEproxy.blobber(reqData.step3Req(gbg.currentTarget)));
+		
+		return;
     },
 
     atkStep4: (n) => {
 		if (gbg.battlesWon == null) {
 			gbg.unlockDialog();
             alert("BATTLESWON NULL");
+			throw '';
             return;
         }
 		
 		if (gbg.era == null) {
 			gbg.unlockDialog();
             alert("ERA NULL");
-            return;
+            throw '';
         }
 		
         const newReq = new XMLHttpRequest();
@@ -273,10 +318,12 @@ let gbg = {
             gbg.waveCount = null;
             gbg.won = false;
             gbg.units = [null, null, null, null, null, null, null, null];
-            setTimeout(gbg.doEncounter, (500 + Math.ceil(Math.random() * 250)) * gbg.atkspdmod, n - 1);
+            setTimeout(gbg.doEncounter, (400 + Math.ceil(Math.random() * 200)) * gbg.atkspdmod, n - 1);
         };
 		
 		newReq.send(FoEproxy.blobber(reqData.step4Req(gbg.currentTarget, gbg.battlesWon, gbg.era)));
+		
+		return;
     },
 
 };
@@ -294,8 +341,11 @@ let reqData = {
     step4Req: (id, won, era) => {
         return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundBattleType","attackerPlayerId":0,"defenderPlayerId":0,"era":"${era}","type":"battleground","currentWaveId":0,"totalWaves":2,"provinceId":${id},"battlesWon":${won}},true],"requestClass":"BattlefieldService","requestMethod":"startByBattleType","requestId":7}]`;
     },
+	setPresetReq: (templateId, template) => {
+		return `[{"__class__":"ServerRequest","requestData":[{"__class__":"ArmyPoolTemplate","id":${templateId},"unitTypeIds":${JSON.stringify(template)}}],"requestClass":"ArmyUnitManagementService","requestMethod":"saveTemplate","requestId":7}]`;
+	},
     armyRefillReq: (units) => {
-        return `[{"__class__":"ServerRequest","requestData":[[{"__class__":"ArmyPool","units":[${units[0]},${units[1]},${units[2]},${units[3]},${units[4]},${units[5]},${units[6]},${units[7]}],"type":"attacking"},{"__class__":"ArmyPool","units":[],"type":"defending"},{"__class__":"ArmyPool","units":[],"type":"arena_defending"}],{"__class__":"ArmyContext","battleType":"battleground"}],"requestClass":"ArmyUnitManagementService","requestMethod":"updatePools","requestId":7}]`;
+        return `[{"__class__":"ServerRequest","requestData":[[{"__class__":"ArmyPool","units":${JSON.stringify(units)},"type":"attacking"},{"__class__":"ArmyPool","units":[],"type":"defending"},{"__class__":"ArmyPool","units":[],"type":"arena_defending"}],{"__class__":"ArmyContext","battleType":"battleground"}],"requestClass":"ArmyUnitManagementService","requestMethod":"updatePools","requestId":7}]`;
     },
 }
 
@@ -315,59 +365,60 @@ FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => 
 });
 
 /*
-Continues using units with 8+ HP, replaces rest with full HP
+Grabs template and templateId.
+Continues using units with 10 HP, replaces rest with full HP
+Mimics "Refresh Units" button. 
  */
 FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData) => {
-	let live = 0; 
+	gbg.templateId = data.responseData.templates[0].id;
+	gbg.template = data.responseData.templates[0].unitTypeIds;
 	
-	let presets = {
-		0: {turturret : ["turturret", 1], sub_cruiser : ["sub_cruiser", 1], rogue : ["rogue", 6]},
-		1: {hydroelectric_eel : ["hydroelectric_eel", 8]},
-	};
+	let returnUnits = [];
+	let is_attacking = [];
+	let unitIdsDict = {};
+	let template_copy = structuredClone(gbg.template);
 	
-	let inUse = presets[gbg.preset];
+	let live = 0;
 	
-    let returnArmy = [];
-	let returnIDs = {};
-    for (let unit of data.responseData.units) {
-		for (const pre in inUse) {
-			if (unit.__class__ == "ArmyUnitStack" && unit.unitTypeId == inUse[pre][0] && unit.count > 10) {
-				returnIDs[pre] = unit.unitIds;
-			}
-			
-			if (unit.is_attacking && unit.unitTypeId == inUse[pre][0]) {
-				if (unit.currentHitpoints >= 8) {
-					returnArmy.push(unit.unitId);
-					inUse[pre][1] -= (unit.unitTypeId == inUse[pre][0]);
-				}
-				live++;
+	for (let unit of data.responseData.units) {
+		if (unit.__class__ == "ArmyUnitStack" && template_copy.includes(unit.unitTypeId)) {
+			unitIdsDict[unit.unitTypeId] = unit.unitIds;
+			if (unit.unitIds.length < 16) {
+				alert("LOW UNITS");
+				throw '';
+				return;
 			}
 		}
-    }
-	
-	let totalInc = 0;
-	
-	for (const pre in inUse) {
-		if (returnIDs[pre] == undefined){
-			alert("LOW UNITS");
-			gbg.stop = true;
+		if (unit.is_attacking) {
+			live++;
+			if (unit.currentHitpoints == 10) {
+				is_attacking.push(unit);
+			}
 		}
-		
-		let inc = 0;
-		while (inUse[pre][1] > 0) {
-			returnArmy.push(returnIDs[pre][inc++]);
-			inUse[pre][1]--;
-		}
-		totalInc += inc;
 	}
 	
-    if (returnArmy.length > 8) {
-        returnArmy.length = 8;
-    }
-
-    gbg.units = returnArmy;
-    gbg.changed = totalInc;
-    gbg.dead += (8 - live);
+	while (template_copy.length != 0) {
+		let currentId = template_copy[0];
+		let found = false;
+		
+		for (var i = is_attacking.length - 1; i > -1; i--) {
+			if (is_attacking[i].unitTypeId == currentId) {
+				returnUnits.push(is_attacking[i].unitId);
+				found = true; 
+				is_attacking.splice(i, 1);
+				break;
+			}
+		}
+		if (!found) {
+			let unitAdd = unitIdsDict[currentId].pop();
+			returnUnits.push(unitAdd);
+			found = true;
+		}
+		template_copy.splice(0, 1);
+	}
+	
+	gbg.dead += (8 - live);
+	gbg.units = returnUnits.slice(0, 8);
 });
 
 /*
