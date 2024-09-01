@@ -2,7 +2,6 @@
 	"name": "Dev Bot",
 	"description": "Bots GBG for FOE.",
 	"default_locale": "en",
-	"version": "3.7.0.0",
 	"version": "0.0.0.0",
 
 	"manifest_version": 3,
