@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -40,10 +40,7 @@ FoEproxy.addFoeHelperHandler('QuestsUpdated', data => {
 	}
 });
 
-/**
- *
- * @type {{FirstCycle: boolean, IsNextLevel: boolean, CalcBackgroundBody: Parts.CalcBackgroundBody, BuildBoxPowerLeveling: Parts.BuildBoxPowerLeveling, CopyStrings: {}, LastLevel: null, TrustExistingPlaces: boolean, RemainingOwnPart: null, CopyIncludeFP: boolean, CopyOwnPlayerName: null, CopyBuildingName: null, CopyIncludeLevelString: boolean, PowerLevelingStartLevel: number, PowerLevelingEndLevel: number, CopyDescending: boolean, CopyPlaces: boolean[], CopyIncludeGB: boolean, CopyModeAuto: boolean, CurrentMaezens: *[], UpdateTableBodyPowerLeveling: Parts.UpdateTableBodyPowerLeveling, Exts: number[], SettingsRemoveRow: Parts.SettingsRemoveRow, CopyModeAutoUnsafe: boolean, CityMapEntity: undefined, SafePlaces: undefined, DangerPlaces: undefined, LeveltLG: undefined, Rankings: undefined, Level: undefined, Show: Parts.Show, ArcPercents: number[], GetCopyStringEx: (function(*, *, *, *, *, *, *, *, *): string), DefaultButtons: (number|string)[], CalcBody: Parts.CalcBody, GetCopyString: (function(): string), CalcBodyPowerLevelingData: (function(): {HasDoubleCollection: boolean, DoubleCollections: [], EigenNettos: [], CityEntity: *, EigenBruttos: [], EndLevel: number | number, OwnPartSum: number, StartLevel: *, Places: []}), PowerLevelingData: null, CopyModeAll: boolean, CopyFunction: (function(*, *): string), CopyFormatPerGB: boolean, CalcBodyPowerLeveling: Parts.CalcBodyPowerLeveling, SettingsInsertNewRow: Parts.SettingsInsertNewRow, CopyDangerPrefix: string, CopyDangerSuffix: string, CopyIncludeDanger: boolean, CopyIncludePlayer: boolean, CopyIncludeOwnPart: boolean, LastPlayerID: null, ShowCalculatorSettings: Parts.ShowCalculatorSettings, GetStorageKey: ((function(*, *): string)|*), SettingsSaveValues: Parts.SettingsSaveValues, LockExistingPlaces: boolean, BackGroundBoxAnimation: Parts.BackGroundBoxAnimation, CopyPlayerName: null, PlaceAvailables: *[], LastEntityID: null, Maezens: *[], CalcTableBodyPowerLeveling: Parts.CalcTableBodyPowerLeveling, CopyString: null, CopyPreP: boolean, CopyIncludeLevel: boolean, IsPreviousLevel: boolean, ShowPowerLeveling: Parts.ShowPowerLeveling, PlayInfoSound: null}}
- */
+
 let Parts = {
 	CityMapEntity: undefined,
 	Rankings: undefined,
@@ -113,7 +110,6 @@ let Parts = {
 	 * HTML Box in den DOM drücken und ggf. Funktionen binden
 	 */
 	Show: () => {
-
 		// Gibt es schon? Raus...
 		if ($('#OwnPartBox').length === 0)
 		{
@@ -1102,7 +1098,7 @@ let Parts = {
 			'<label class="form-check-label game-cursor" for="chain-p5"><input type="checkbox" class="form-check-input" id="chain-p5" data-place="5" ' + (Parts.CopyPlaces[4] ? 'checked' : '') + '> <span>' + i18n('Boxes.OwnpartCalculator.Place') + ' 5</span></label>' +
 			'<label class="form-check-label game-cursor" for="chain-all"><input type="checkbox" class="form-check-input" id="chain-all" data-place="all" ' + (Parts.CopyModeAll ? 'checked' : '') + '> <span>' + i18n('Boxes.OwnpartCalculator.All') + '</span></label>' +
 			'<label class="form-check-label game-cursor" for="chain-auto"><input type="checkbox" class="form-check-input" id="chain-auto" data-place="auto" ' + (Parts.CopyModeAuto ? 'checked' : '') + '> <span>' + i18n('Boxes.OwnpartCalculator.Auto') + '</span></label>' +
-			'<label class="form-check-label-wide game-cursor" for="chain-auto-unsafe"><input type="checkbox" class="form-check-input" id="chain-auto-unsafe" data-place="auto-unsafe" ' + (Parts.CopyModeAutoUnsafe ? 'checked' : '') + '> <span>' + i18n('Boxes.OwnpartCalculator.AutoWithUnsafe') + '</span></label>' +
+			'<label class="form-check-label game-cursor" for="chain-auto-unsafe"><input type="checkbox" class="form-check-input" id="chain-auto-unsafe" data-place="auto-unsafe" ' + (Parts.CopyModeAutoUnsafe ? 'checked' : '') + '> <span>' + i18n('Boxes.OwnpartCalculator.AutoWithUnsafe') + '</span></label>' +
 		'</div>';
 
 		h.push(cb);
@@ -1122,8 +1118,6 @@ let Parts = {
 		// Box wurde schon in den DOM gelegt?
 		if( $('.OwnPartBoxBackground').length > 0 ){
 			$('.OwnPartBoxBackgroundBody').html( h.join('') );
-
-			// und raus...
 			return;
 		}
 
@@ -1168,10 +1162,6 @@ let Parts = {
 			// center overlay to parent box
 			let $boxWidth = $('#OwnPartBox').outerWidth() - 10,
 				$bgBodyWidth = $boxBg.outerWidth();
-
-			$boxBg.css({
-				left: Math.round( ($boxWidth - $bgBodyWidth) / 2 )
-			})
 
 			// animation
 			$boxBg.animate({height: h, opacity: 1}, 250, function () {

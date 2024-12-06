@@ -1,7 +1,7 @@
 /*
  * *************************************************************************************
  *
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -1423,7 +1423,7 @@ let GuildMemberStat = {
 						if (plbuilding.resources.goods !== undefined && plbuilding.resources.goods !== null)
 						{
 							goodslist = plbuilding.resources.goods.map(good => {
-								return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite-50 sm ${good.good_id}"></span> `;
+								return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite sprite-35 ${good.good_id}"></span> `;
 							}).join('');
 
 						}
@@ -1749,7 +1749,7 @@ let GuildMemberStat = {
 
 					h.push(`<div class="detail-item"><table><thead><tr><th colspan="3">${i18n('Boxes.GuildMemberStat.EraTreasuryGoods')}</th></tr></thead><tbody>`);
 					EraTreasuryGoods.forEach(good => {
-						h.push(`<tr><td class="goods-image"><span class="goods-sprite-50 sm ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
+						h.push(`<tr><td class="goods-image"><span class="goods-sprite sprite-35 ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
 					});
 
 					h.push(`<tr><td colspan="3" class="text-right"><i>${i18n('Boxes.GuildMemberStat.LastUpdate') + ' ' + moment(TreasuryGoodsData.updated).fromNow()}</i></td></tr>`);
@@ -1802,7 +1802,7 @@ let GuildMemberStat = {
 				return res;
 			}
 
-			let buildingID = helper.str.cleanup(obj.member) + '' + obj.gbid;
+			let buildingID = obj.player_id + '' + obj.gbid;
 
 			if (!(buildingID in res))
 			{
@@ -1921,7 +1921,7 @@ let GuildMemberStat = {
 			if (plbuilding.resources && plbuilding.resources.goods && plbuilding.resources.goods !== null)
 			{
 				goodslist = plbuilding.resources.goods.map(good => {
-					return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite-50 sm ${good.good_id}"></span> `;
+					return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite sprite-35 ${good.good_id}"></span> `;
 				}).join('');
 
 			}
@@ -2056,7 +2056,7 @@ let GuildMemberStat = {
 							exportGood[DailyGuildGoods[i].good] = { eraId: eraId, era: currentEra, good: DailyGuildGoods[i].name, produceable: 0, instock: 0 };
 						}
 
-						d.push(`<tr><td class="goods-image"><span class="goods-sprite-50 sm ${i}"></span></td><td>${DailyGuildGoods[i].name}</td><td class="text-right">${HTML.Format(DailyGuildGoods[i].value)}</td></tr>`);
+						d.push(`<tr><td class="goods-image"><span class="goods-sprite sprite-35 ${i}"></span></td><td>${DailyGuildGoods[i].name}</td><td class="text-right">${HTML.Format(DailyGuildGoods[i].value)}</td></tr>`);
 						exportGood[DailyGuildGoods[i].good].produceable = DailyGuildGoods[i].value;
 					}
 				}
@@ -2084,7 +2084,7 @@ let GuildMemberStat = {
 						exportGood[good.good] = { eraId: eraId, era: currentEra, good: good.name, produceable: 0, instock: 0 };
 					}
 
-					d.push(`<tr><td class="goods-image"><span class="goods-sprite-50 sm ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
+					d.push(`<tr><td class="goods-image"><span class="goods-sprite sprite-35 ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
 					exportGood[good.good].instock = good.value;
 				});
 

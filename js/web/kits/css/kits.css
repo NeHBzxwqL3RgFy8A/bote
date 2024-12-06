@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -91,6 +91,10 @@
 	width: 100%;
 	z-index: 500;
 	box-sizing: border-box;
+}
+
+#kits h2 .kitsEff {
+	margin-left: 20px;
 }
 
 #kits h2 .upgrades {

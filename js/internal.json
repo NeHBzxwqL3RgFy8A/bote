@@ -18,7 +18,7 @@
 	"guildfights",
 	"stats",
 	"campagnemap",
-	"combat_power",
+	"boost_inventory",
 	"bonus-service",
 	"technologies",
 	"negotiation",
@@ -37,7 +37,6 @@
 	"bluegalaxy",
 	"eventhandler",
 	"fp-collector",
-	"unit-gex",
 	"maptradewarning",
 	"guildmemberstat",
 	"quests",
@@ -64,4 +63,6 @@
 	"worldchallenge",
 	"boost-potions",
 	"gbg"
+	"customTooltip",
+	"reconstruction"
 ]

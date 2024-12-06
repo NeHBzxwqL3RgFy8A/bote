@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -461,14 +461,13 @@
     background-color: var(--background-table-odd);
 }
 
-#GuildMemberStat .goods-sprite-50.sm {
+#GuildMemberStat .sprite-35 {
     width: 25px;
     height: 19px;
     vertical-align: middle;
 }
 
-#GuildMemberStat .goods-sprite-50.sm::before {
-    zoom: 0.7;
+#GuildMemberStat .sprite-35::before {
     overflow: hidden;
     position: static;
     display: inline-block;

@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -244,7 +244,7 @@ let Stats = {
 	goodsSubTypes:[],
 	ResMap: {
 		NoAge: ['money', 'supplies', 'tavern_silver', 'medals', 'premium'],
-		special: ['promethium', 'orichalcum', 'mars_ore', 'asteroid_ice', 'venus_carbon', 'unknown_dna','crystallized_hydrocarbons'],
+		special: ['promethium', 'orichalcum', 'mars_ore', 'asteroid_ice', 'venus_carbon', 'unknown_dna','crystallized_hydrocarbons','dark_matter'],
 	},
 
 	QI:{
@@ -1031,7 +1031,7 @@ let Stats = {
 			colors,
 			pointFormat: `<tr>
 								<td>
-									<span class="goods-sprite-50 {series.options.goodsId}"></span>
+									<span class="goods-sprite sprite-50 {series.options.goodsId}"></span>
 								</td>
 								<td>
 									<span style="margin: 0 5px;"><span style="color:{point.color}">●</span> {series.name}: </span>
@@ -1135,7 +1135,7 @@ let Stats = {
 			colors,
 			pointFormat: `<tr>
 								<td>
-									<span class="goods-sprite-50 {series.options.goodsId}"></span>
+									<span class="goods-sprite sprite-50 {series.options.goodsId}"></span>
 								</td>
 								<td>
 									<span style="margin: 0 5px;"><span style="color:{point.color}">●</span> {series.name}: </span>
