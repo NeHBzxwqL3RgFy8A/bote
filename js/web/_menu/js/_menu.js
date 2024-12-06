@@ -1,7 +1,7 @@
 /*
  * *************************************************************************************
  *
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -62,7 +62,8 @@ let _menu = {
 		'recurringQuests',
 		'compare_friends_threads',
 		'discord',
-		'findGB'
+		'findGB',
+		'boost_inventory'
 		//'qiMap'
 		// 'marketOffers',
 	],
@@ -568,12 +569,12 @@ let _menu = {
 
 		let btn_City = $('<span />').on('click', function () {
 			if (LastMapPlayerID === ExtPlayerID) {
-				CityMap.init(false);
+				CityMap.init(false, MainParser.NewCityMapData);
 			}
 			else {
 				let Player = PlayerDict[LastMapPlayerID];
 				let PlayerName = (Player ? Player['PlayerName'] : '???');
-				CityMap.init(false, MainParser.OtherPlayerCityMapData, PlayerName);
+				CityMap.init(false, MainParser.OtherPlayerCityMapData, PlayerName, true);
             }
 		});
 
@@ -832,7 +833,7 @@ let _menu = {
 	 *
 	 * @returns {*|jQuery}
 	 */
-	unitsGex_Btn: () => {
+	/*unitsGex_Btn: () => { //deactivated
 		let btn = _menu.MakeButton('unitsGex', i18n('Menu.unitsGex.Title'), i18n('Menu.unitsGex.Desc'));
 
 		let btn_sp = $('<span />').on('click', function () {
@@ -840,7 +841,7 @@ let _menu = {
 		});
 
 		return btn.append(btn_sp);
-	},
+	},*/
 
 	/**
 	 * Guildfight Overview
@@ -911,8 +912,7 @@ let _menu = {
 				GexStat.BuildBox(false);
 			}
 		});
-
-		return btn.append(btn_sp);
+		return btn.append(btn_sp, $(`<span id="gex-attempt-count" class="hud-counter">${GExAttempts.count||0}</span>`)).ready(GExAttempts.refreshGUI);
 	},
 
 	/**
@@ -930,6 +930,18 @@ let _menu = {
 		return btn.append(btn_sp);
 	},
 
+	/**
+	 * Castle System
+	 */
+	boost_inventory_Btn: () => {
+		let btn = _menu.MakeButton('boost_inventory', i18n('Menu.BoostInventory.Title'), i18n('Menu.BoostInventory.Desc'));
+
+		let btn_sp = $('<span />').bind('click', function () {
+			BoostInventory.Init();
+		});
+
+		return btn.append(btn_sp);
+	},
 
 	/**
 	 * Compare friends and threads

@@ -1,7 +1,7 @@
 /*
  *
  *  * **************************************************************************************
- *  * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ *  * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  *  * You may use, distribute and modify this code under the
  *  * terms of the AGPL license.
  *  *
@@ -75,6 +75,10 @@ FoEproxy.addHandler('GuildBattlegroundService', 'getBattleground', (data, postDa
 	}
 });
 
+FoEproxy.addHandler("ClanService","getClanData",(data)=>{
+	if (ActiveMap != 'gg') return
+	GuildFights.otherGuilds.check(data)
+})
 
 /**
  * @type {{SettingsExport: GuildFights.SettingsExport, curDetailViewFilter: null, UpdateDB: ((function(*, *): Promise<void>)|*), GBGRound: null, PrevActionTimestamp: null, NewActionTimestamp: null, InjectionLoaded: boolean, MapData: null, BuildPlayerContent: ((function(*=): Promise<void>)|*), intiateDatePicker: ((function(): Promise<void>)|*), GBGHistoryView: boolean, LogDatePicker: null, NewAction: null, PrevAction: null, init: GuildFights.init, PrepareColors: GuildFights.PrepareColors, SetBoxNavigation: ((function(*=): Promise<void>)|*), PlayerBoxContent: *[], DeleteAlert: GuildFights.DeleteAlert, PlayerBoxSettingsSaveValues: GuildFights.PlayerBoxSettingsSaveValues, ToggleProgressList: GuildFights.ToggleProgressList, Colors: null, RefreshTable: GuildFights.RefreshTable, SetAlert: GuildFights.SetAlert, formatRange: (function(): string), GetAlertButton: (function(integer): string), Tabs: *[], ToggleCopyButton: GuildFights.ToggleCopyButton, Alerts: *[], PlayersPortraits: null, GetTabContent: (function(): string), ShowPlayerBox: GuildFights.ShowPlayerBox, CurrentGBGRound: null, showGuildColumn: number, curDateFilter: null, SortedColors: null, ShowGuildBox: GuildFights.ShowGuildBox, BuildFightContent: GuildFights.BuildFightContent, BuildDetailViewContent: ((function(*): Promise<void>)|*), SetTabContent: GuildFights.SetTabContent, BuildDetailViewLog: ((function(*): Promise<void>)|*), TabsContent: *[], GetAlerts: (function(): Promise<unknown>), UpdateCounter: GuildFights.UpdateCounter, GBGAllRounds: null, ProvinceNames: null, checkForDB: ((function(*): Promise<void>)|*), HandlePlayerLeaderboard: ((function(*): Promise<void>)|*), SetTabs: GuildFights.SetTabs, CopyToClipBoard: GuildFights.CopyToClipBoard, GetTabs: (function(): string), DeleteOldSnapshots: ((function(*=): Promise<void>)|*), PlayerBoxSettings: {showProgressFilter: number, showOnlyActivePlayers: number, showLogButton: number, showRoundSelector: number}, Neighbours: *[], curDateEndFilter: null, ShowPlayerBoxSettings: GuildFights.ShowPlayerBoxSettings, SaveLiveFightSettings: GuildFights.SaveLiveFightSettings, ShowLiveFightSettings: GuildFights.ShowLiveFightSettings, ShowDetailViewBox: GuildFights.ShowDetailViewBox}}
@@ -115,7 +119,6 @@ let GuildFights = {
 
 	Tabs: [],
 	TabsContent: [],
-
 
 	/**
 	 *
@@ -890,7 +893,7 @@ let GuildFights = {
 
 
 			h.push('<div class="pname dark-bg text-center">' + playerName + ': ' + moment.unix(gbground).subtract(11, 'd').format(i18n('DateShort')) + ` - ` + moment.unix(gbground).format(i18n('Date')) + '</div>');
-
+			h.push('<p class="dark-bg" style="padding:5px;margin:0;">' + i18n('Boxes.GuildFights.SnapShotLogDisclaimer') + '</p>')
 			h.push('<table id="gbgPlayerLogTable" class="foe-table gbglog"><thead>');
 			h.push('<tr class="sorter-header">');
 			h.push('<th class="is-number" data-type="gbg-playerlog-group">' + i18n('Boxes.GuildFights.Date') + '</th>');
@@ -1779,6 +1782,49 @@ let GuildFights = {
 			);
 		});
 	},
+
+	otherGuilds: {
+		members:{},
+		currentClan:null,
+		last:null,
+		check: (data) => {
+			id = data.responseData.id
+			if (id==ExtGuildID) return
+			let m=data.responseData.members
+			time = moment()
+			if (id!=GuildFights.otherGuilds.currentClan || GuildFights.otherGuilds.last.diff(time)>300000) {
+				GuildFights.otherGuilds.currentClan = id 
+				GuildFights.otherGuilds.members = {}
+				for (x of m) GuildFights.otherGuilds.members[x.name] = x.won_battles;
+			} else {
+				let actives=[]
+				for (x of m) if (GuildFights.otherGuilds.members[x.name] < x.won_battles) {
+					actives.push(x.name)
+					GuildFights.otherGuilds.members[x.name] = x.won_battles
+				}
+				if (Object.values(actives).length>0) GuildFights.otherGuilds.show(data.responseData.name,actives)
+			}
+			GuildFights.otherGuilds.last=time
+		},
+		show: (guildName,list)=> {
+			if(!Settings.GetSetting('ShowOtherGuildActivity')) return;
+			if ($('#OtherGuildActivity').length === 0) {
+				//HTML.AddCssFile('');
+				HTML.Box({
+					'id': 'OtherGuildActivity',
+					'title': i18n('Boxes.OtherGuildActivity.Title'),
+					'auto_close': true,
+					'minimize': true,
+					'dragdrop': true
+				});
+			}
+			let body=`<h2 style="text-align:center">${guildName}</h2><ul>`;
+			for (let x of list) body += `<li>${x}</li>`
+			body +=`<ul>`;
+			$('#OtherGuildActivityBody').html(body);
+		}
+	}
+	
 };
 
 /**

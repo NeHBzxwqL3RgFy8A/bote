@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -45,14 +45,14 @@ FoEproxy.addHandler('BattlefieldService', 'all', (data, postData) => {
 
     let noTournament=!data?.responseData?.state?.ranking_data?.tournament_running || data?.responseData?.battleType?.type=="guild_expedition";
     // A unit from a future age has died
-    if (nextEraUnitDead)
-    	return BattleAssist.ShowNextEraDialog(noTournament);
+    //if (nextEraUnitDead)
+    //	return BattleAssist.ShowNextEraDialog(noTournament);
 
     // There are no other opponents
     if (winnerBit !== 1 || !ranking_data?.nextArmy)
     	return;
 
-    // Only agents are still alive
+    // Only rogues are still alive
     if (alive.filter(e => e !== 'rogue').length === 0)
     	return BattleAssist.ShowRogueDialog();
 });
@@ -60,6 +60,7 @@ FoEproxy.addHandler('BattlefieldService', 'all', (data, postData) => {
 FoEproxy.addHandler('BattlefieldService', 'getArmyPreview', (data, postData) => {
     
     if(!Settings.GetSetting('ShowArmyAdvice'))	return;
+    if (data.responseData?.__class__=="Error") return;
     
     $('#battleAssistArmyAdvice').remove();
     $('#battleAssistAddAdvice').remove();
@@ -99,7 +100,7 @@ FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) 
     }
     if (data.responseData.state.winnerBit!=2 && unitsLost < BattleAssist.AASettings.lostUnits && HPstart - HPcurrent < BattleAssist.AASettings.lostHP) return;
     if (data.responseData.state.winnerBit==2 && !BattleAssist.AASettings.battleLost) return;
-    if (BattleAssist.armyAdvice[BattleAssist.armyRecent[0].id] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0].id].bonus < BattleAssist.armyRecent[0].bonus) return
+    if (BattleAssist.armyAdvice[BattleAssist.armyRecent[0]?.id] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0]?.id].bonus < BattleAssist.armyRecent[0]?.bonus) return
     BattleAssist.ShowAddAdvice();
     
 });
@@ -107,13 +108,13 @@ FoEproxy.addHandler('BattlefieldService', 'startByBattleType', (data, postData) 
 FoEproxy.addHandler('BattlefieldService', 'surrender', (data, postData) => {
     if (!Settings.GetSetting('ShowArmyAdvice'))	return;
     if (!BattleAssist.AASettings.battleSurrendered) return
-    if (BattleAssist.armyRecent[0] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0].id] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0].id].bonus < BattleAssist.armyRecent[0].bonus) return
+    if (BattleAssist.armyRecent[0] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0]?.id] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0]?.id].bonus < BattleAssist.armyRecent[0]?.bonus) return
     BattleAssist.ShowAddAdvice();
 });
 FoEproxy.addHandler('BattlefieldService', 'surrenderWave', (data, postData) => {
     if (!Settings.GetSetting('ShowArmyAdvice'))	return;
     if (!BattleAssist.AASettings.battleSurrendered) return
-    if (BattleAssist.armyRecent[0] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0].id] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0].id].bonus < BattleAssist.armyRecent[0].bonus) return
+    if (BattleAssist.armyRecent[0] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0]?.id] && BattleAssist.armyAdvice[BattleAssist.armyRecent[0]?.id].bonus < BattleAssist.armyRecent[0]?.bonus) return
     BattleAssist.ShowAddAdvice();
 });
 FoEproxy.addHandler('GuildExpeditionService', 'getEncounter', (data, postData) => {
@@ -133,7 +134,7 @@ FoEproxy.addHandler('GuildExpeditionService', 'getEncounter', (data, postData) =
 });
 
 /**
- * @type {{ShowRogueDialog: BattleAssist.ShowRogueDialog, ShowNextEraDialog: BattleAssist.ShowNextEraDialog}}
+ * @type {{ShowRogueDialog: BattleAssist.ShowRogueDialog}}
  */
 let BattleAssist = {
 
@@ -146,7 +147,7 @@ let BattleAssist = {
 	 * Shows a User Box when an army unit of the next age has died
 	 *
 	 * @constructor
-	 */
+	 *
     ShowNextEraDialog: (nT=false) => {
         
         HTML.Box({
@@ -173,6 +174,7 @@ let BattleAssist = {
             'dragdrop': false,
             'minimize': false
         });
+        //if (MainParser.ABTests["foe_abtest_army_ux"].group != "control_group") $('#battleAssistRogueDialog').addClass("ABnew")
         $('#battleAssistRogueDialogBody').html(`${i18n('Boxes.BattleAssist.Text.Rogue')}`);
     },
     

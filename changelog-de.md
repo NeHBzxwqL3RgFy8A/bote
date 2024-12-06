@@ -1,5 +1,159 @@
 ## Changelog - Extension
 
+##### 3.9.0.0
+
+**Neu**
+- Im Umbaumodus wird nun eine nach Größe sortierbare Gebäudeliste angezeigt
+- Gex-Ergebnisse: Menu-Icon zeigt nun die aktuelle Anzahl an GE-Versuchen an
+- Tooltips: in bestimmten Modulen werden nun die Gebäude-informationen als Tooltip angezeigt:
+	- im Effizienz-Modul, im "Gebäude hinzufügen" dialog
+	- im Boost-Inventar
+	- in der Umbau-Größenliste
+	- lasst uns auf Discord wissen, wo ihr diese Info noch gerne sehen würdet
+
+**Update**
+- Statistik: Dunkle Materie zu Spezial-Gütern hinzugefügt
+- Einstellung "Lade aktuelle Beta" angepasst
+
+**BugFix**
+- Gebäude-Effizienz: 
+	- Ist wegen eines Spiel-Updates kaputt gegangen
+	- Gleiche Gebäude mit und ohne Verbündete wurden nicht korrekt gezählt
+- Produktionsübersicht:
+	- In der Fragmente-Übersicht war die Anzahl an Fragmenten teilweise nicht korrekt
+	- In der Fragmente-Übersicht wurden nicht alle Gebäude gelistet
+
+##### 3.8.1.0
+
+**Neu**
+- Produktionsübersicht:
+	- QI Übersicht hinzugefügt
+	- Einstellungen hinzugefügt: Man kann jetzt einstellen, ob man eine Art Countdown oder die Uhrzeit sehen möchte
+	- "Fertig" und "Ernte" Spalte kombiniert: wenn eine Produktion fertig ist, wird es in dieser Spalte angezeigt
+
+**Update**
+- Idle Game Events:
+	- Die Kosten zum günstigeren Abschluss einer Runde werden nun aus den Spieldaten generiert und sollten sich von alleine aktualisieren
+- Legendäre Bauwerke Rechner - Powerlevel-Werte für Stufen 1-68 für Weltraumbasis hinzugefügt
+
+**BugFix**
+- Produktionsübersicht: ist wegen eines Spiel-Updates kaputt gegangen
+- Der Weltraumfrachter hat in der Produktionsübersicht gefehlt
+- Verhandlungs-Assistent: Die Güter wurden nicht angezeigt, wenn man alte Betriebssysteme nutzt
+- LG Investitionen: Fenster repariert, die Blaue Galaxie fehlt noch, aber man sollte die sowieso bis Stufe 91 leveln
+- Burgsystem: Das Fenster war nach einem Spiel-Update kaputt
+
+##### 3.8.0.0
+
+**Neu**
+- Produktionsübersicht Update:
+	- Fehlerkorrekturen und fehlende Gebäude hinzugefügt
+	- Güter-Übersicht überarbeitet
+	- Übersicht aller Fragmente und Items hinzugefügt inkl. Summe über alle Gebäude
+	- Filter hinzugefügt
+	- Kampf-Boosts kategorisiert
+	- Einheiten produktion nach Typ und Zeitalter summiert
+
+- Effizienzbewertung Update:
+	- Neue Kategorien hinzugefügt
+	- Neue Übersicht inklusive Anzeige der produzierten Fragmente/Items
+	- Neu: Möglichkeit zu suchen und zu filtern
+	- Neu: Anzeige der Werte pro Feld hinzugefügt
+	- Neu: Gebäude, die man nicht hat, zum Vergleichen hinzufügen
+
+- Boost-Inventar
+	- listet alle Gebäude aus dem Inventar, die Boosts (zum Beispiel für den Kampf) bereitstellen
+
+- Aktive Mitglieder anderer Gilden
+	- wenn innerhalb von 5 Minuten, zweimal nacheinander die Details derselben fremden Gilde aufgerufen werden (Hauptquartier in den GG) und zumindest ein Mitglied dieser Gilde aktiv war, wird ein Fenster geöffnet, in dem die aktiven Mitglieder gelistet werden
+
+**Update**
+- Kampf-Assistent:
+	- es wird keine Warnung mehr ausgegeben, wenn eine Einheit eines höheren Zeitalters gefallen ist, da diese Einheiten jetzt im Krankenhaus wiederbelebt werden können
+
+- Kits:
+	- Effizienz-Werte der Gebäude hinzugefügt
+
+- Technologien:
+	- Raumfahrt: Weltraumbasis Daten und Güter hinzugefügt
+
+- Einstellungen:
+	- Kategorien umstrukturiert
+	- Fenster vergrößert und verschiebbar gemacht
+
+- Stadtübersicht QI:
+	- Gebäude werden nun nach Typ kategorisiert
+	- Münz-, Vorrats- und Quantenaktionsboosts aus der Hauptstadt werden mitberechnet - danke Juber!
+
+**BugFix**
+- Fenster:
+	- können nun nicht mehr verschoben werden, wenn die Maus auf einen der Buttons des Fensters zeigt
+
+---
+
+##### 3.7.0.0
+
+**Neu**
+- Tränke Übersicht hinzugefügt in der oberen rechten Ecke um
+	- die Laufzeit des Tranks mit kürzesten verbliebenen Laufzeit anzuzeigen (Tränke die für das aktuell gewählte Feature nicht relevant sind, werden ignoriert)
+	- alle aktuell aktiven Tränke in einem Mouse-Over Pop-Up anzuzeigen 
+	- alle im Inventar verfügbaren Tränke in einem Mouse-Over Pop-Up anzuzeigen
+
+**Update**
+- Kits - neue Teile hinzugefügt (bis Herbst 2024)
+
+- Mergergame an Care Event angepasst
+
+
+---
+
+##### 3.6.5.0
+
+**Neu**
+- Sommer Event:
+	- Der Event-Truhen-Helfer zeigt nun verdeckte Preise eines Bretts an
+
+**Update**
+- Stadtübersicht:
+	- QI Aktionspunkte die durch Gebäude produziert werden, werden jetzt in der Stadtübersicht angezeigt (wenn in QI)
+	- Man sieht nun auch bei anderen Spielern, welche Gebäude keine Straßenverbindungen benötigen
+
+- Kulturelle Siedlungen:
+	- Auf 5-Stunden Zyklus angepasst
+
+- Alle verstecken/schließen funktioniert nun auch für Minispiel-Blocker
+
+- Blaue Galaxie:
+	- Aktuelle Güter werden nun separat gelistet
+
+- Kits:
+	- Aktualisiert bis Sommer Event 2024
+	- Bilder werden nun erst geladen, wenn tatsächlich benötigt, um Ladezeiten zu verkürzen
+	- Erhabene Upgrades werden nun auch in gelistet
+
+- Abgelaufene beschränkte Gebäude:
+	- Es kann nun eingestellt werden, für welche Gebäude die "ist abgelaufen" Warnung bei Start nicht mehr angezeigt werden soll
+
+- Statistik:
+	- Ereignisse und Scherben werden wieder gelistet
+
+**BugFix**
+- GG Gebäude-Empfehlung:
+	- In 3er-Provinzen wurden manche Kombination übergangen
+
+- (QI) Pass Belohnungen wurden nicht korrekt behandelt, wenn mehr als eine Belohnung auf einmal eingesammelt wurde
+
+- FP-Einsammlungen:
+	- QI-Belohnungen wurden falsch gezählt
+
+- Stadtübersicht:
+	- Bestimmte Gebäude konnten verhindern, dass die Übersicht korrekt lädt
+
+- Bilder der Wiederkehrende Quest Übersicht werden wieder korrekt geladen
+
+
+---
+
 ##### 3.6.4.0
 
 **Update**
@@ -9,8 +163,10 @@
 
 - Stadt-Übersicht:
 	- zeigt in den QI eine Produktionsübersicht
+
 - Cardgame:
 	- die Warnung wegen geringer Lebenspunkte schließt sich nun gemeinsam mit dem Helfer-Fenster
+
 - Kits:
 	- Es können nun Favoriten angelegt und gefiltert werden
 
@@ -26,7 +182,7 @@
 - Stadtübersicht:
 	- Neu: Stadtübersicht auch bei Siedlungen, Kolonien und Quanten Invasionen
 - Card Game:
-	- An Änderungen des Geschichts-Events 2024 angepasst
+	- An Änderungen des Geschichte-Events 2024 angepasst
 - Quests:
 	- Wenn eine Rivalen-Quest erfüllt ist, wird ein Ton abgespielt. Kann in den Einstellungen deaktiviert werden
 - FP Sammlung:

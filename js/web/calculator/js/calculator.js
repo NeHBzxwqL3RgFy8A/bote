@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -274,7 +274,7 @@ let Calculator = {
 
 		if (Calculator.LastRecurringQuests !== undefined && RecurringQuests !== Calculator.LastRecurringQuests) { //Schleifenquest gestartet oder abgeschlossen
 			if (PlaySound) { //Nicht durch Funktion PlaySound ersetzen!!! GetRecurringQuestLine wird auch vom EARechner aufgerufen.
-				if (Settings.GetSetting('EnableSound')) helper.sounds.message.play();
+				helper.sounds.play("message");
 			}
         }
 
@@ -684,7 +684,7 @@ let Calculator = {
 	 */
     PlaySound: () => {
         if (Calculator.PlayInfoSound) {
-			if (Settings.GetSetting('EnableSound')) helper.sounds.message.play();
+			helper.sounds.play("message");
         }
     },
 

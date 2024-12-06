@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -13,7 +13,7 @@
 
 :root {
 	--text-light: #fff;
-	--text-normal: #f3D6A0;
+	--text-normal: #ffe7ba;
 	--text-bright: #ffB539;
 	--text-medium: #93795D;
 	--text-medium2: #7b5730;
@@ -55,7 +55,8 @@
 
 	--background-table-hover: rgba(243, 214, 160, 0.2);
 	--background-table-odd: rgba(255, 158, 69, 0.07);
-	--background-table-info: rgba(33, 150, 243, 0.3);
+	--background-table-darker: #40190080;
+	--background-table-info: #003c6d4d;
 	--background-table-success: rgba(18, 125, 9, 0.3);
 	--background-table-error: rgba(121, 8, 8, 0.3);
 	--background-table-bright: rgba(208, 126, 3, 0.4);
@@ -79,4 +80,33 @@
 	--text-success: #5fc745;
 	--text-info: #42a1ee;
 	--text-danger: #f34f4f;
+
+	--background-color-military: #fff;
+	--border-color-military: #bbb;
+	--background-color-residential: #7abaff;
+	--border-color-residential: #219eff;
+	--background-color-special: #51e5ff;
+	--border-color-special: #08b6d4;
+	--background-color-noStreet: #793bc9;
+	--border-color-noStreet: #3d2783;
+	--background-color-chain: #bb23ae;
+	--border-color-chain: #86127d;
+	--background-color-decoration: #497445;
+	--border-color-decoration: #1c7430;
+	--background-color-street: #666666;
+	--border-color-street: #636363;
+	--background-color-goods: #7d2a4d;
+	--border-color-goods: #6a2a3a;
+	--background-color-culture: #7d4900;
+	--border-color-culture: #582c00;
+	--background-color-main_building: #ffb300;
+	--border-color-main_building: #ffb300;
+	--background-color-production: #416dff;
+	--border-color-production: #2732ff;
+	--background-color-greatbuilding: #e6542f;
+	--border-color-greatbuilding: #af3d2b;
+	--background-color-random_production: #a8ff18;
+	--border-color-random_production: #4cff11;
+	--background-color-tower: #cdcdcd;
+	--border-color-tower: #787a7a;
 }

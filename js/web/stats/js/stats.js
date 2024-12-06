@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -49,16 +49,22 @@ FoEproxy.addHandler('RewardService', 'collectReward', async (data, postData) => 
 
 	for (let reward of rewards) {
 
-		if (rewardIncidentSource === 'default') {
-			//split flying island incidents from normal ones
+		if (rewardIncidentSource === 'hidden_reward') {
+			//split flying island incidents from Ad-chests
 			if (isCurrentlyInOutpost === 1){
 				rewardIncidentSource = 'shards';
 			}
-			//split league rewards and fragment assembly from incidents
+		}
+		if (rewardIncidentSource === 'living_city') {
+			rewardIncidentSource = 'hidden_reward'
+		}
+		
+		if (rewardIncidentSource === 'default') {
+			//ignore league rewards and fragment assembly
 			if(postData[0].requestMethod === 'useItem'){
 				continue;
 			}
-			//split quest rewards from incidents
+			//ignore quest rewards
 			if(postData[0].requestMethod === 'advanceQuest'){
 				continue;
 			}
@@ -82,8 +88,8 @@ FoEproxy.addHandler('RewardService', 'collectReward', async (data, postData) => 
 FoEproxy.addHandler('RewardService', 'collectRewardSet', async (data, postData) => {
 	//console.log(JSON.parse(JSON.stringify(data)))
 	let rewardIncidentSource = data.responseData.context;
-	if (rewardIncidentSource.indexOf('guild_raids')>=0) rewardIncidentSource='guild_raids';
-	if (rewardIncidentSource.indexOf('event')<0 && rewardIncidentSource != 'guild_raids') return;
+	if (rewardIncidentSource!='guild_raids' && rewardIncidentSource.indexOf('guild_raids')>=0) rewardIncidentSource='guild_raidsP'; //QI-Pass detection
+	if (rewardIncidentSource.indexOf('event')<0 && !["guild_raids","guild_raidsP"].includes(rewardIncidentSource)) return; //exclude Main city collection "collect all", "aid_all"
 	let rewards = data.responseData.reward.rewards;
     await IndexDB.getDB();
 	
@@ -93,7 +99,7 @@ FoEproxy.addHandler('RewardService', 'collectRewardSet', async (data, postData) 
 		let n = 1
 		if (rewardIncidentSource == 'guild_raids') {
 			let ref = null
-			for (ref of Stats.QI.RewardLookUp?.[Stats.QI.currentNode]?.[reward.type+"#"+reward.subType]) {
+			for (ref of (Stats.QI.RewardLookUp?.[Stats.QI.currentNode]?.[reward.type+"#"+reward.subType] || [])) {
 				n = reward.amount / ref.amount;
 				if (n!=Math.floor(n)) {
 					n = 1;
@@ -116,7 +122,8 @@ FoEproxy.addHandler('RewardService', 'collectRewardSet', async (data, postData) 
 
 		// Add reward incident record
 		for (let i=0;i<n;i++) {
-			await Stats.addReward(rewardIncidentSource, reward.amount ||0, reward.id);
+			let ris = rewardIncidentSource == 'guild_raidsP' ? 'guild_raids' : rewardIncidentSource;
+			await Stats.addReward(ris, reward.amount ||0, reward.id);
 		}
 	}
 });
@@ -237,7 +244,7 @@ let Stats = {
 	goodsSubTypes:[],
 	ResMap: {
 		NoAge: ['money', 'supplies', 'tavern_silver', 'medals', 'premium'],
-		special: ['promethium', 'orichalcum', 'mars_ore', 'asteroid_ice', 'venus_carbon', 'unknown_dna','crystallized_hydrocarbons'],
+		special: ['promethium', 'orichalcum', 'mars_ore', 'asteroid_ice', 'venus_carbon', 'unknown_dna','crystallized_hydrocarbons','dark_matter'],
 	},
 
 	QI:{
@@ -594,7 +601,7 @@ let Stats = {
 		let moreOptions = ``;
 		if (Stats.isSelectedRewardSources()) {
 			const btnsRewardSelect = [
-				'default', //incidents
+				'hidden_reward', //incidents
 				'__event', //event rewards
 				'battlegrounds_conquest', // Battlegrounds
 				'guildExpedition', // Temple of Relics
@@ -1024,7 +1031,7 @@ let Stats = {
 			colors,
 			pointFormat: `<tr>
 								<td>
-									<span class="goods-sprite-50 {series.options.goodsId}"></span>
+									<span class="goods-sprite sprite-50 {series.options.goodsId}"></span>
 								</td>
 								<td>
 									<span style="margin: 0 5px;"><span style="color:{point.color}">●</span> {series.name}: </span>
@@ -1128,7 +1135,7 @@ let Stats = {
 			colors,
 			pointFormat: `<tr>
 								<td>
-									<span class="goods-sprite-50 {series.options.goodsId}"></span>
+									<span class="goods-sprite sprite-50 {series.options.goodsId}"></span>
 								</td>
 								<td>
 									<span style="margin: 0 5px;"><span style="color:{point.color}">●</span> {series.name}: </span>

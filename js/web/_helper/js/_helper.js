@@ -38,6 +38,7 @@ helper.str = {
 	 * <a href="/param">@param</a> {string} [textToCopy] Source string
 	 */
 	copyToClipboard: async(textToCopy) => {
+		if (!document.hasFocus()) return;
 		if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
 			return navigator.clipboard.writeText(textToCopy);
 		} else {
@@ -62,7 +63,9 @@ helper.str = {
 		copyFrom.remove();
 	},
 
-	cleanup: (textToCleanup) => textToCleanup.toLowerCase().replace(/[\W_ ]+/g, ''),
+	cleanup: (textToCleanup) => {
+		return textToCleanup.toLowerCase().replace(/ä/g, 'a').replace(/ö/g, 'o').replace(/ü/g, 'u').replace(/[\W_ ]+/g, '')
+	},
 };
 
 helper.arr = {
@@ -139,6 +142,22 @@ helper.permutations = (()=>{
 helper.sounds = {
 	ping: new Audio(extUrl + 'vendor/sounds/ping.mp3'),
     message: new Audio(extUrl + 'vendor/sounds/message.mp3'),
+	play: (sound) => {
+		if (Settings.GetSetting('EnableSound')) helper.sounds[sound].play();
+	},
+};
+
+helper.preloader = { 
+	show: function(id) {
+		$('#gms-loading-data').remove();
+		$(id).append('<div id="gms-loading-data"><div class="loadericon"></div></div>');
+	},
+
+	hide: function() {
+		$('#gms-loading-data').fadeOut(500, function () {
+			$(this).remove();
+		})
+	}
 };
 
 let HTML = {
@@ -250,6 +269,9 @@ let HTML = {
 				HTML.BringToFront(div);
 			}, 300);
 
+			$("#"+args['id'] + 'Header .box-buttons span').on("pointerdown",(e)=>{
+				e.stopPropagation()
+			})
 
 			if (args['auto_close']) {
 				$(`#${args.id}`).on('click', `#${args['id']}close`, function () {
@@ -667,6 +689,24 @@ let HTML = {
 			return '-';
 		} else {
 			return Number(number).toLocaleString(i18n('Local'));
+		}
+	},
+
+
+	/**
+	 * Formatiert Zahlen oder gibt = 0 einen "-" aus
+	 *
+	 * @param number
+	 * @returns {*}
+	 */
+	FormatNumberShort: (number,replaceZero=true) => {
+		if (number === 0 && replaceZero) {
+			return '-';
+		} else {
+			return Intl.NumberFormat(i18n('Local'), {
+				notation: "compact",
+				maximumFractionDigits: 1
+			  }).format(Number(number));
 		}
 	},
 

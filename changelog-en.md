@@ -1,5 +1,156 @@
 ## Changelog - Extension
 
+##### 3.9.0.0
+
+**New**
+- In reconstruction mode a building list, sortable by building size is offered
+- GE-Results: Menu icon now shows the current number of attempts
+- Tooltips: some modules now show the building information as a tooltip:
+	- Effiziency module - in the "add building" dialogue
+	- Boost Inventory
+	- Reconstruction size-list
+	- let us know on discord where else you would like to see that info
+
+**Update**
+- Statistics: Dark Matter added to Special Goods
+- Changed settings entry "Load current beta"
+
+**BugFix**
+- Building efficiency: 
+	- Broke for some players due to a game update
+	- Same buildings with/without allies were not counted correctly
+- Porduction Overview:
+	- Fragment amount was not korrekt for some buildings
+	- Not all buildings were listed in fragments overview
+
+##### 3.8.1.0
+
+**New**
+- Production Overview:
+	- Added QI productions and boosts view
+	- Added setting for times: relative time, AM/PM, 24 hour clock
+	- Merged Collection and Done column: when a production is ready, done will be shown, otherwise the selected time will be visible
+
+**Update**
+- Idle Game Mechanic:
+	- The cost reduction to finish a round is now pulled from the game data and should auto-update with changes
+- Great Biuldings Calculator - powerlevel values added for SASH levels 1-68
+
+**BugFix**
+- Production Overview was broken after a game update
+- Production Overview did not show the Space Carrier
+- Negotiations: Goods were not shown if you had an old operation system
+- GB Investments: Fixed the window. BG is still missing, but you should level it to 91 anyways
+- Castle System: Window was broken after a game update
+
+##### 3.8.0.0
+
+**New**
+- Production Overview Update:
+	- Bugfixes, added missing buildings
+	- Removed some information to improve readability
+	- Overhauled goods view
+	- Added all fragments and items incl. sum accross all building
+	- Added filter
+	- Categorized army boosts
+	- Added sum table for unit production according to unit types
+
+- Buildings Efficiency Rating Update:
+	- New Categories
+	- New overview with more details
+	- New: Search and filter for easier comparison
+	- New: Show values per tile
+	- New: Add any building to the list for comparison
+
+- Boost-Inventory
+	- Lists all Buildings in your Inventory that provide boosts (e.g. for battle)
+	- Fragmented buildings are not considered!!
+
+- Active Members of other Guilds
+	- When within 5 minutes, the same guild (HQ in GBG) is inspected twice and at least one member of that guild was active, a list of the active guild members is displayed
+
+**Update**
+- Battle-Assist:
+	- There will be no warning message anymore, if higher age units die in battle as they can now be revived in the hospital
+
+- Kits:
+	- Added Efficiency Score of the respective buildings
+
+- Technologies:
+	- Added Space Age Space Hub assets
+
+- Settings:
+	- Reorganized the menu
+	- Bigger and moveable window
+
+- QI City Map:
+	- Buildings are now grouped by type
+	- Coin, supply and quantum action boosts from your main city are now included - thx Juber!
+
+**BugFix**
+- Boxes:
+	- can not be draged anymore when the mouse is on of the buttons of the box
+
+##### 3.7.0.0
+
+**New**
+- added potion overview icon in the top right corner to
+	- display the runtime of the potion with the shortest runtime left (potions are ignored when not relevant for currently selected game feature)
+	- display all currently active potions upon mouse over
+	- display inventory stock of all potions upon mouse over
+
+**Update**
+- Kits updated till Fall Event 2024
+
+- Mergergame updated for Care Event
+
+---
+
+##### 3.6.5.0
+
+**New**
+- Summer Event:
+	- Added a list of currently hidden rewards to the event chest helper
+
+**Update**
+- City Map:
+	- Added QI Action Points in production overview when in QI Settlement
+	- Added highlighting for buildings without street requirements for all players
+
+- Cultural Settlements Overview:
+	- Changed to 5-hour production cycle
+
+- Close/hide all buttons now also close/hide minigame blockers
+
+- Blue Galaxy:
+	- Current era goods and other goods are now handled separately
+
+- Kits:
+	- Updated 'til Summer Event 2024
+	- Images are now lazy-loaded to improve loading time
+	- Ascended upgrades added to overview
+
+- Limited buildings expired warning:
+	- Now with a setting to ignore selected buildings after they expire
+
+- Statistics:
+	- Incidents and shards are now properly tracked again
+
+**BugFix**
+- GBG Building Recommendation:
+	- Some combinations were ignored in 3-slot provinces
+
+- (QI) pass rewards were not processed correctly if more than one was collected at once
+
+- City Map:
+	- certain buildings caused the city map to not load properly
+
+- FP Collection:
+	- QI rewards were way too high
+
+- Recurring quest list did not show proper images
+
+---
 
 ##### 3.6.4.0
 

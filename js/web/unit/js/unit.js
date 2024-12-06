@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -106,14 +106,18 @@ let Unit = {
 
 
 	PrepareCoords: ()=> {
-		if( $('#unit-css-block').length > 0 ){
+		if( $('#unit-css-block').length > 0){
+			return;
+		}
+
+		if(Object.keys(Unit.CoordsRaw).length === 0){
 			return;
 		}
 
 		let s = [],
 			r = Unit.CoordsRaw.image.slice(0, Unit.CoordsRaw.image.lastIndexOf('_')) + '_';
 
-		s.push(`.unit_icon{background: transparent url('${srcLinks.get("/shared/unit_portraits/armyuniticons_50x50/armyuniticons_50x50_0.png", true)}') top left no-repeat;background-size:calc(${Unit.CoordsRaw.size.w}px*var(--unit_scale)) calc(${Unit.CoordsRaw.size.h}px*var(--unit_scale));display:inline-block;width:calc(50px*var(--unit_scale));height:calc(50px*var(--unit_scale));zoom:0.75}`);
+		s.push(`:root {--unit_scale: 3/5;}.unit_icon{background: transparent url('${srcLinks.get("/shared/unit_portraits/armyuniticons_50x50/armyuniticons_50x50_0.png", true)}') top left no-repeat;background-size:calc(${Unit.CoordsRaw.size.w}px*var(--unit_scale)) calc(${Unit.CoordsRaw.size.h}px*var(--unit_scale));display:inline-block;width:calc(50px*var(--unit_scale));height:calc(50px*var(--unit_scale));zoom:0.75}`);
 
 		for(let i in Unit.CoordsRaw.frames)
 		{

@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -173,7 +173,7 @@ let Outposts = {
 		;
 
 		/** @type {number} */
-		const current4HProductionRate = buildings.reduce(
+		const current5HProductionRate = buildings.reduce(
 			/** @type {(acc: number, building: FoE_JSON_CityMapEntity) => number} */
 			(acc, building) => {
 				const state = building.state;
@@ -186,12 +186,12 @@ let Outposts = {
 				if (production.__class__ === 'CityEntityProductionProduct') {
 					const amount = production.product.resources[primaryResourceId];
 					if (amount != null) {
-						return acc + amount*(60*60*4/* 4h */)/production.production_time;
+						return acc + amount/production.production_time*(60*60*5 /* 5h */);
 					}
 				} else if (production.__class__ === 'CityEntityResourcesWithRequirementsProduct') {
 					const amount = production.resources.resources[primaryResourceId];
 					if (amount != null) {
-						return acc + amount*(60*60*4/* 4h */)/production.production_time;
+						return acc + amount/production.production_time*(60*60*5 /* 5h */);
 					}
 				}
 				return acc;
@@ -234,8 +234,8 @@ let Outposts = {
 			'</span><span><strong>'
 			+ GoodsData[primaryResourceId].name + ': ' + HTML.Format(ResourceStock[primaryResourceId]||0)
 			+ '</strong> (+ '
-			+ (current4HProductionRate > 0 ? HTML.Format(MainParser.round(current4HProductionRate)) : '???')
-			+ '/4h)'
+			+ (current5HProductionRate > 0 ? HTML.Format(MainParser.round(current5HProductionRate)) : '???')
+			+ `/5h)`
 			+ '</span>'
 		);
 		t.push('</p>');
@@ -317,8 +317,8 @@ let Outposts = {
 		for (let resourceID of resourceIDs)
 		{
 			let IconID = resourceID;
-			if (resourceID === 'barley' || resourceID === 'pottery' || resourceID === 'flowers' || resourceID === 'sacrificial_offerings') IconID = 'fine_' + IconID;
-			t.push(`<th class="text-center"><span class="goods-sprite-50 ${IconID} goods-name" title="${GoodsData[resourceID].name}"></span></th>`);
+			if (['barley', 'pottery', 'flowers', 'sacrificial_offerings','fresh_fish','coconuts','kava','catamarans'].includes(resourceID)) IconID = 'fine_' + IconID;
+			t.push(`<th class="text-center"><span class="goods-sprite sprite-50 ${IconID} goods-name" title="${GoodsData[resourceID].name}"></span></th>`);
 		}
 
 		t.push('</tr>');

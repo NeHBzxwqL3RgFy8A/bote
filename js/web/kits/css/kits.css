@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -93,6 +93,10 @@
 	box-sizing: border-box;
 }
 
+#kits h2 .kitsEff {
+	margin-left: 20px;
+}
+
 #kits h2 .upgrades {
 	float: right;
 	vertical-align: middle;
@@ -150,6 +154,14 @@
 
 #kits .upgrades .platinum::after {
 	background-position: -52px 0;
+}
+
+#kits .upgrades .ascended {
+	color: #ffae33e0;
+}
+
+#kits .upgrades .ascended::after {
+	background-position: -92px 0;
 }
 
 #kits .item-kits {

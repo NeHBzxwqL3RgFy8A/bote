@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -98,7 +98,7 @@ let _menu_right = {
 	Prepare: () => {
 		let MenuItemCount = $("#foe-helper-hud-slider").children().length;
 
-		_menu.HudCount = Math.floor((($(window).outerHeight() - 50) - $('#foe-helper-hud').offset().top) / 55);
+		_menu.HudCount = Math.floor((($(window).outerHeight() - 25) - $('#foe-helper-hud').offset().top) / 48);
 		_menu.HudCount = Math.min(_menu.HudCount, MenuItemCount);
 
 		if (_menu.HudCount <= 0) {
@@ -113,7 +113,7 @@ let _menu_right = {
 			_menu.HudCount = _menu.HudLength = parseInt(MenuLength);
 		}
 
-		_menu.HudHeight = (_menu.HudCount * 55);
+		_menu.HudHeight = (_menu.HudCount * 49);
 		_menu.SlideParts = Math.ceil(MenuItemCount / _menu.HudCount);
 
 		$('#foe-helper-hud').height(_menu.HudHeight + 2);
@@ -148,9 +148,6 @@ let _menu_right = {
 			});
 		};
 
-
-
-
 		// Tooltipp top ermitteln und einblenden
 		$('.hud-btn').stop().hover(function () {
 			let $this = $(this),
@@ -169,7 +166,7 @@ let _menu_right = {
 		$('#foe-helper-hud-slider').sortable({
 			placeholder: 'menu-placeholder',
 			axis: 'y',
-			distance: 15,
+			distance: 22,
 			start: function () {
 				$('#foe-helper-hud').addClass('is--sorting');
 			},

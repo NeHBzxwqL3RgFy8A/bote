@@ -1,6 +1,6 @@
 /*
  * **************************************************************************************
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -183,7 +183,7 @@ let _menu_bottom = {
 		$('#foe-helper-hud-slider').sortable({
 			placeholder: 'menu-placeholder',
 			axis: 'x',
-			distance: 15,
+			distance: 22,
 			start: function () {
 				$('#foe-helper-hud').addClass('is--sorting');
 			},

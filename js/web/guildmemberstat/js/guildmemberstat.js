@@ -1,7 +1,7 @@
 /*
  * *************************************************************************************
  *
- * Copyright (C) 2022 FoE-Helper team - All Rights Reserved
+ * Copyright (C) 2024 FoE-Helper team - All Rights Reserved
  * You may use, distribute and modify this code under the
  * terms of the AGPL license.
  *
@@ -149,9 +149,6 @@ FoEproxy.addHandler('GuildBattlegroundStateService', 'getState', (data, postData
 });
 
 
-/**
- * @type {{GBGId: undefined, acceptedDeleteWarning: boolean, ConversationIds: [], hasUpdateProgress: boolean, RefreshPlayerGBGDB: (function(*): Promise<void>), ReadGuildMemberBuildings: (function(*, *): Promise<void>), uniq_array: (function(*): *), CurrentStatGroup: string, MemberDict: {}, RefreshGuildMemberDB: (function(*): Promise<void>), TreasuryGoodsData: {}, RefreshForumDB: (function(*): Promise<void>), BuildBox: (function(*=): undefined), GBGData: undefined, hasGuildMemberRights: boolean, UpdateData: (function(*, *=): Promise<undefined>), ResetMessageCounter: (function(): Promise<void>), InitSettings: (function(): undefined), DeletePlayerDetail: (function(*=): Promise<undefined>), SettingsSaveValues: (function(): Promise<void>), RefreshPlayerGexDB: (function(*): Promise<void>), RefreshPlayerGuildBuildingsDB: (function(*): Promise<void>), Settings: {deleteOlderThan: number, lastupdate: number, showSearchbar: number, showBattlesWon: number, gexgbgDateFormat: string, showZeroValues: number, autoStartOnUpdate: number, showDeletedMembers: number}, showPreloader: GuildMemberStat.showPreloader, MarkMemberAsDeleted: (function(*=): Promise<undefined>), ShowGuildEras: (function(): Promise<void>), ShowGreatBuildings: (function(): Promise<void>), filterTable: GuildMemberStat.filterTable, checkForDB: (function(*): Promise<void>), Data: undefined, GetGuildMemberBuildings: (function(): []), GexData: undefined, remove_key_from_array: (function(*, *): *), hidePreloader: GuildMemberStat.hidePreloader, SetActivityWarning: (function(*=, *): Promise<void>), GuildMemberStatSettings: GuildMemberStat.GuildMemberStatSettings, setEraGoods: GuildMemberStat.setEraGoods, Show: (function(): Promise<undefined>), ShowGuildBuildings: (function(): Promise<undefined>), ShowGuildGoods: (function(): Promise<undefined>), GEXId: undefined, DeleteExMembersOlderThan: (function(*): Promise<undefined>), ExportData: undefined, db: null}}
- */
 let GuildMemberStat = {
 	db: null,
 	Data: undefined,
@@ -224,7 +221,7 @@ let GuildMemberStat = {
 				settings: 'GuildMemberStat.GuildMemberStatSettings()'
 			});
 
-			GuildMemberStat.showPreloader('#GuildMemberStat');
+			helper.preloader.show('#GuildMemberStat');
 
 			HTML.AddCssFile('guildmemberstat');
 		}
@@ -735,7 +732,7 @@ let GuildMemberStat = {
 				})
 				.first();
 
-			if (CurrentData === undefined)
+			if (!CurrentData)
 			{
 				let m = [];
 				m.push(message_id);
@@ -951,7 +948,7 @@ let GuildMemberStat = {
 
 		let h = [];
 
-		GuildMemberStat.showPreloader("#GuildMemberStat");
+		helper.preloader.show("#GuildMemberStat");
 
 		GuildMemberStat.InitSettings();
 		GuildMemberStat.hasUpdateProgress = false;
@@ -1052,7 +1049,7 @@ let GuildMemberStat = {
 
 			// Get available activity warnings
 			activityWarnings = CurrentActivityWarnings.filter(function (item) {
-				return item.player_id === MemberID;
+				return item?.player_id === MemberID;
 			});
 
 			if (activityWarnings.length && activityWarnings[0] !== undefined)
@@ -1063,7 +1060,7 @@ let GuildMemberStat = {
 
 			// Get GEX activities
 			gexActivity = CurrentGexActivity.filter(function (item) {
-				return item.player_id === MemberID;
+				return item?.player_id === MemberID;
 			});
 
 			if (gexActivity.length)
@@ -1074,7 +1071,7 @@ let GuildMemberStat = {
 
 			// Get GBG activities
 			gbgActivity = CurrentGbgActivity.filter(function (item) {
-				return item.player_id === MemberID;
+				return item?.player_id === MemberID;
 			});
 
 			if (gbgActivity.length)
@@ -1085,7 +1082,7 @@ let GuildMemberStat = {
 
 			// Get Message Center activity
 			forumActivity = CurrentForumActivity.filter(function (item) {
-				return item.player_id === MemberID;
+				return item?.player_id === MemberID;
 			});
 
 			if (forumActivity.length)
@@ -1206,7 +1203,7 @@ let GuildMemberStat = {
 
 				if (expand === true)
 				{
-					GuildMemberStat.showPreloader("#GuildMemberStat");
+					helper.preloader.show("#GuildMemberStat");
 					setTimeout(() => { GuildMemberStat.ShowMemberDetail(tr, expand), 300 });
 				}
 				else
@@ -1226,7 +1223,7 @@ let GuildMemberStat = {
 			});
 
 			// Fade out loading screen
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 		});
 	},
 
@@ -1426,7 +1423,7 @@ let GuildMemberStat = {
 						if (plbuilding.resources.goods !== undefined && plbuilding.resources.goods !== null)
 						{
 							goodslist = plbuilding.resources.goods.map(good => {
-								return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite-50 sm ${good.good_id}"></span> `;
+								return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite sprite-35 ${good.good_id}"></span> `;
 							}).join('');
 
 						}
@@ -1570,7 +1567,7 @@ let GuildMemberStat = {
 			container: '#GuildMemberStatBody'
 		});
 
-		GuildMemberStat.hidePreloader("#GuildMemberStat");
+		helper.preloader.hide();
 
 	},
 
@@ -1578,7 +1575,7 @@ let GuildMemberStat = {
 	ShowGuildEras: async () => {
 
 		GuildMemberStat.CurrentStatGroup = 'Eras';
-		GuildMemberStat.showPreloader("#GuildMemberStat");
+		helper.preloader.show("#GuildMemberStat");
 		GuildMemberStat.InitSettings();
 
 		let GuildMembers = await GuildMemberStat.db.player.where({ deleted: 0 }).reverse().sortBy('score');
@@ -1669,7 +1666,7 @@ let GuildMemberStat = {
 
 				if (expand === true)
 				{
-					GuildMemberStat.showPreloader("#GuildMemberStat");
+					helper.preloader.show("#GuildMemberStat");
 					setTimeout(() => { GuildMemberStat.ShowGuildEraDetail(tr, expand), 300 });
 				}
 				else
@@ -1690,7 +1687,7 @@ let GuildMemberStat = {
 
 			});
 
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 		});
 
 	},
@@ -1752,7 +1749,7 @@ let GuildMemberStat = {
 
 					h.push(`<div class="detail-item"><table><thead><tr><th colspan="3">${i18n('Boxes.GuildMemberStat.EraTreasuryGoods')}</th></tr></thead><tbody>`);
 					EraTreasuryGoods.forEach(good => {
-						h.push(`<tr><td class="goods-image"><span class="goods-sprite-50 sm ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
+						h.push(`<tr><td class="goods-image"><span class="goods-sprite sprite-35 ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
 					});
 
 					h.push(`<tr><td colspan="3" class="text-right"><i>${i18n('Boxes.GuildMemberStat.LastUpdate') + ' ' + moment(TreasuryGoodsData.updated).fromNow()}</i></td></tr>`);
@@ -1766,14 +1763,14 @@ let GuildMemberStat = {
 
 		});
 
-		GuildMemberStat.hidePreloader();
+		helper.preloader.hide();
 
 	},
 
 
 	ShowGuildBuildings: async () => {
 
-		GuildMemberStat.showPreloader("#GuildMemberStat");
+		helper.preloader.show("#GuildMemberStat");
 		GuildMemberStat.InitSettings();
 		GuildMemberStat.CurrentStatGroup = 'GuildBuildings';
 
@@ -1791,7 +1788,7 @@ let GuildMemberStat = {
 		if (gmsBuildingDict === undefined || gmsBuildingDict.length <= 0)
 		{
 			$("#gmsContentWrapper").html(d.join(''));
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 			return;
 		}
 
@@ -1805,7 +1802,7 @@ let GuildMemberStat = {
 				return res;
 			}
 
-			let buildingID = helper.str.cleanup(obj.member) + '' + obj.gbid;
+			let buildingID = obj.player_id + '' + obj.gbid;
 
 			if (!(buildingID in res))
 			{
@@ -1924,7 +1921,7 @@ let GuildMemberStat = {
 			if (plbuilding.resources && plbuilding.resources.goods && plbuilding.resources.goods !== null)
 			{
 				goodslist = plbuilding.resources.goods.map(good => {
-					return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite-50 sm ${good.good_id}"></span> `;
+					return `<span title="${good.value} x ${GoodsData[good.good_id]['name']}" class="goods-sprite sprite-35 ${good.good_id}"></span> `;
 				}).join('');
 
 			}
@@ -1952,7 +1949,7 @@ let GuildMemberStat = {
 				container: '#GuildMemberStatBody'
 			});
 
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 
 			$('#gmsContentWrapper #toggleBuildingView').on('click', function () {
 				$('#gmsContentWrapper .buildinglist').toggleClass('hide show');
@@ -1963,7 +1960,7 @@ let GuildMemberStat = {
 
 	ShowGuildGoods: async () => {
 
-		GuildMemberStat.showPreloader("#GuildMemberStat");
+		helper.preloader.show("#GuildMemberStat");
 		GuildMemberStat.InitSettings();
 		GuildMemberStat.CurrentStatGroup = 'GuildGoods';
 
@@ -2002,7 +1999,7 @@ let GuildMemberStat = {
 		if (ErasGuildGoods === null)
 		{
 			$("#gmsContentWrapper").html(d.join(''));
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 			return;
 		}
 
@@ -2059,7 +2056,7 @@ let GuildMemberStat = {
 							exportGood[DailyGuildGoods[i].good] = { eraId: eraId, era: currentEra, good: DailyGuildGoods[i].name, produceable: 0, instock: 0 };
 						}
 
-						d.push(`<tr><td class="goods-image"><span class="goods-sprite-50 sm ${i}"></span></td><td>${DailyGuildGoods[i].name}</td><td class="text-right">${HTML.Format(DailyGuildGoods[i].value)}</td></tr>`);
+						d.push(`<tr><td class="goods-image"><span class="goods-sprite sprite-35 ${i}"></span></td><td>${DailyGuildGoods[i].name}</td><td class="text-right">${HTML.Format(DailyGuildGoods[i].value)}</td></tr>`);
 						exportGood[DailyGuildGoods[i].good].produceable = DailyGuildGoods[i].value;
 					}
 				}
@@ -2087,7 +2084,7 @@ let GuildMemberStat = {
 						exportGood[good.good] = { eraId: eraId, era: currentEra, good: good.name, produceable: 0, instock: 0 };
 					}
 
-					d.push(`<tr><td class="goods-image"><span class="goods-sprite-50 sm ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
+					d.push(`<tr><td class="goods-image"><span class="goods-sprite sprite-35 ${good.good}"></span></td><td>${good.name}</td><td class="text-right">${HTML.Format(good.value)}</td></tr>`);
 					exportGood[good.good].instock = good.value;
 				});
 
@@ -2120,14 +2117,14 @@ let GuildMemberStat = {
 				container: '#GuildMemberStatBody'
 			});
 
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 		});
 	},
 
 
 	ShowGreatBuildings: async () => {
 
-		GuildMemberStat.showPreloader("#GuildMemberStat");
+		helper.preloader.show("#GuildMemberStat");
 		GuildMemberStat.InitSettings();
 		GuildMemberStat.CurrentStatGroup = 'GreatBuildings';
 
@@ -2141,7 +2138,7 @@ let GuildMemberStat = {
 		if (GreatBuildings === null)
 		{
 			$("#gmsContentWrapper").html(d.join(''));
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 			return;
 		}
 
@@ -2292,7 +2289,7 @@ let GuildMemberStat = {
 				});
 			});
 
-			GuildMemberStat.hidePreloader();
+			helper.preloader.hide();
 
 			$('#gblist > tbody tr.hasdetail').off().on('click', function () {
 
@@ -2514,7 +2511,7 @@ let GuildMemberStat = {
 
 		if (GuildMemberStat.Settings.deleteOlderThan !== tmpDeleteOlder && (tmpDeleteOlder > 0 || tmpDeleteOlder === -1))
 		{
-			GuildMemberStat.showPreloader('#GuildMemberStat');
+			helper.preloader.show('#GuildMemberStat');
 
 			await GuildMemberStat.DeleteExMembersOlderThan(tmpDeleteOlder);
 		}
@@ -2591,21 +2588,6 @@ let GuildMemberStat = {
 		return a.filter(function (item) {
 			return seen.hasOwnProperty(item) ? false : (seen[item] = true);
 		});
-	},
-
-
-	showPreloader: (id) => {
-		$('#gms-loading-data').remove();
-		$(id).append('<div id="gms-loading-data"><div class="loadericon"></div></div>');
-	},
-
-
-	hidePreloader: () => {
-
-		$('#gms-loading-data').fadeOut(500, function () {
-			$(this).remove();
-		});
-
 	},
 
 
