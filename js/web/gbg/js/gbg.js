@@ -53,7 +53,7 @@ let gbg = {
 		<p id="raceTF">Full Take: ${gbg.racing}</p>
 		</div>`);
 		body.push(`<div>
-		<input type="checkbox" class="slider round" style="margin: 0 auto" id="demolish">Holding @200 Y/N</input>
+		<input type="checkbox" class="slider round" style="margin: 0 auto" id="demolish">Holding @180 Y/N</input>
 		<p id="holdingTF">Holding: ${gbg.holding}</p>
 		</div>`);
 		body.push(`<p>------------</p>`);
@@ -332,8 +332,8 @@ let reqData = {
     step1Req: (id) => {
         return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundBattleType","attackerPlayerId":0,"defenderPlayerId":0,"type":"battleground","currentWaveId":0,"totalWaves":0,"provinceId":${id},"battlesWon":0}],"requestClass":"BattlefieldService","requestMethod":"getArmyPreview","requestId":7}]`;
     },
-    step2Req: () => {
-        return `[{"__class__":"ServerRequest","requestData":[{"__class__":"ArmyContext","battleType":"battleground"}],"requestClass":"ArmyUnitManagementService","requestMethod":"getArmyInfo","requestId":7}]`;
+    step2Req: (id) => {
+        return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundArmyContext","battleType":"battleground","provinceId":${id}}],"requestClass":"ArmyUnitManagementService","requestMethod":"getArmyInfo","requestId":7}]`;
     },
     step3Req: (id) => {
         return `[{"__class__":"ServerRequest","requestData":[{"__class__":"BattlegroundBattleType","attackerPlayerId":0,"defenderPlayerId":0,"type":"battleground","currentWaveId":0,"totalWaves":0,"provinceId":${id},"battlesWon":0},true],"requestClass":"BattlefieldService","requestMethod":"startByBattleType","requestId":7}]`;
@@ -419,6 +419,7 @@ FoEproxy.addHandler('ArmyUnitManagementService', 'getArmyInfo', (data, postData)
 	
 	gbg.dead += (8 - live);
 	gbg.units = returnUnits.slice(0, 8);
+	console.log(gbg.units);
 });
 
 /*
@@ -467,7 +468,7 @@ FoEproxy.addWsHandler('GuildBattlegroundService', 'getProvinces', (data, postDat
 				if (!gbg.holding && attacker.maxProgress - attacker.progress <= (25 * !gbg.racing)) {
 					gbg.stop = true;
 					return;
-				} else if (gbg.holding && !(attacker.progress <= 200 || gbg.racing)) {
+				} else if (gbg.holding && !(attacker.progress <= 180 || gbg.racing)) {
 					gbg.stop = true;
 					return;
 				}
