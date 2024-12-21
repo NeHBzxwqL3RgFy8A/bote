@@ -268,7 +268,7 @@ GetFights = () =>{
 
 		// Alle Gebäude sichern
 		LastMapPlayerID = ExtPlayerID;
-		MainParser.CityMapData = Object.assign({}, ...data.responseData.city_map.entities.map((x) => ({ [x.id]: x })));
+		MainParser.CityMapData = Object.assign({}, ...data.responseData.city_map.entities.map((x) => {if (x.cityentity_id == 'X_ArcticFuture_Landmark2') MainParser.AO = x; return {[x.id]: x};}));
 		MainParser.SaveBuildings(MainParser.CityMapData);
 		MainParser.SetArkBonus2();
 		// Güterliste
@@ -939,6 +939,9 @@ let MainParser = {
 	Quests: null,
 	ArkBonus: 0,
 	Inventory: {},
+	fspID: null, 
+	aidID: null, 
+	AO: null, 
 
 	// all buildings additional data
 	BuildingUpgrades: null,
@@ -1713,6 +1716,8 @@ let MainParser = {
 		//MainParser.Inventory = {};
 		for (let i = 0; i < Items.length; i++) {
 			let ID = Items[i]['id'];
+			if (MainParser.fspID == null && Items[i]['name'] == 'Finish Special Production') {MainParser.fspID = ID;} 
+			if (MainParser.aidID == null && Items[i]['name'] == 'Self-Aid Kit') {MainParser.aidID = ID;}
 			MainParser.Inventory[ID] = Items[i];
 		}
 		FoEproxy.triggerFoeHelperHandler('InventoryUpdated');
