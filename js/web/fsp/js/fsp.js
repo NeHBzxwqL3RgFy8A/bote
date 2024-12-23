@@ -13,10 +13,11 @@ let fsp = {
         });
 
         body.push(`<div>
-		<button class="btn-default" onclick="fsp.goofy(fsp.aid);" id="fsp_start">AUTO FSP</button>
+		<button class="btn-default" onclick="fsp.stop = false; fsp.lockDialog(); fsp.goofy(fsp.aid);" id="fsp_start">AUTO FSP</button>
+		<button class="btn-default" onclick="fsp.stop = true;" id="halt" disabled>Stop</button>
 		</div>`);
         body.push(`<p>------------</p>`);
-        body.push(`<p id="fsp-details">Current Target: ${(MainParser.CityMapData[fsp.targID] !== undefined ? MainParser.CityMapData[fsp.targID].cityentity_id : undefined)} | FP buffer left: ${fsp.maxFP - fsp.currFP}</p>`);
+        body.push(`<p id="fsp-details">Current Target: ${fsp.targID} | FP buffer left: ${fsp.maxFP - fsp.currFP}</p>`);
 
         $('#fspMenuBody').html(body);
 		
@@ -24,8 +25,22 @@ let fsp = {
     },
 
     refreshDialog: () => {
-        document.getElementById("fsp-details").innerHTML = `Current Target: ${MainParser.CityMapData[fsp.targID].cityentity_id} | FP buffer left: ${fsp.maxFP - fsp.currFP}`;
+        document.getElementById("fsp-details").innerHTML = `Current Target: ${fsp.targID} | FP buffer left: ${fsp.maxFP - fsp.currFP}`;
     },
+	
+	lockDialog: () => {
+        document.getElementById("halt").disabled = false;
+		document.getElementById("fsp_start").disabled = true; 
+        fsp.refreshDialog();
+    },
+	
+	unlockDialog: () => {
+        document.getElementById("halt").disabled = true
+		document.getElementById("fsp_start").disabled = false; 
+        fsp.refreshDialog();
+    },
+
+	stop: false, 
 
     fspID: null,
     aidID: null,
@@ -44,19 +59,30 @@ let fsp = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            setTimeout(func, 15 + Math.ceil(Math.random() * 20));
+            setTimeout(func, 400 + Math.ceil(Math.random() * 100));
         };
 
         newReq.send(FoEproxy.blobber(fsp.reqData.goofy()));
     },
 
     aid: () => {
-        if (BlueGalaxy.DoubleCollections == 0) {
-            alert("No more BG charges");
+		fsp.refreshDialog();
+
+		if (fsp.stop) { 
+			fsp.targID = null; 
+		} 
+		
+		if (fsp.targID == null) {
+            fsp.stop = false;
+            fsp.unlockDialog();
+            alert("Stopped");
             return;
         }
-
-        fsp.refreshDialog();
+		
+        if (BlueGalaxy.DoubleCollections == 0) {
+            alert("No BG Charges");
+            return;
+        }
 
         if (MainParser.Inventory[fsp.aidID].inStock < 25) {
             alert("Not enough self-aid kits");
@@ -69,7 +95,7 @@ let fsp = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            setTimeout(fsp.goofy, 250 + Math.ceil(Math.random() * 100), fsp.fsp);
+            setTimeout(fsp.goofy, 300 + Math.ceil(Math.random() * 50), fsp.fsp);
         };
 
         newReq.send(FoEproxy.blobber(fsp.reqData.aid(fsp.aidID, fsp.targID)));
@@ -87,7 +113,7 @@ let fsp = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            setTimeout(fsp.collect, 250 + Math.ceil(Math.random() * 100));
+            setTimeout(fsp.collect, 400 + Math.ceil(Math.random() * 100));
         };
 
         newReq.send(FoEproxy.blobber(fsp.reqData.fsp(fsp.fspID, fsp.targID)));
@@ -100,7 +126,7 @@ let fsp = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            setTimeout(fsp.enter, 150 + Math.ceil(Math.random() * 50));
+            setTimeout(fsp.enter, 250 + Math.ceil(Math.random() * 50));
         };
 
         newReq.send(FoEproxy.blobber(fsp.reqData.collect(fsp.targID)));
@@ -131,7 +157,7 @@ let fsp = {
         newReq.setRequestHeader("Content-Type", FoEproxy.ContentType);
 
         newReq.onload = function () {
-            setTimeout(fsp.goofy, 150 + Math.ceil(Math.random() * 50), fsp.aid);
+            setTimeout(fsp.goofy, 200 + Math.ceil(Math.random() * 50), fsp.aid);
         };
 
         newReq.send(FoEproxy.blobber(fsp.reqData.contribute(fsp.aoID, fsp.plyrID, fsp.lvl, ResourceStock['strategy_points'])));

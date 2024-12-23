@@ -42,9 +42,9 @@ let gbg = {
         });
 
         body.push(`<div>
-		<button class="btn-default" onclick="gbg.lockDialog(); gbg.doEncounter(1);" id="oneHit">1 Hit</button>
-		<button class="btn-default" onclick="gbg.lockDialog(); gbg.doEncounter(10);" id="tenHit">10 Hits</button>
-		<button class="btn-default" onclick="gbg.lockDialog(); gbg.doEncounter(-1);" id="sectorKill">Kill Sector</button>
+		<button class="btn-default" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(1);" id="oneHit">1 Hit</button>
+		<button class="btn-default" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(10);" id="tenHit">10 Hits</button>
+		<button class="btn-default" onclick="gbg.stop = false; gbg.lockDialog(); gbg.doEncounter(-1);" id="sectorKill">Kill Sector</button>
 		<button class="btn-default" onclick="gbg.stop = true;" id="stop" disabled>Stop</button>
 		</div>`);
         body.push(`<p>------------</p>`);
