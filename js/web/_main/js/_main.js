@@ -268,7 +268,10 @@ GetFights = () =>{
 
 		// Alle Gebäude sichern
 		LastMapPlayerID = ExtPlayerID;
-		MainParser.CityMapData = Object.assign({}, ...data.responseData.city_map.entities.map((x) => {if (x.cityentity_id == 'X_ArcticFuture_Landmark2') MainParser.AO = x; return {[x.id]: x};}));
+		MainParser.CityMapData = Object.assign({}, ...data.responseData.city_map.entities.map((x) => {
+			if (x.cityentity_id == 'X_ArcticFuture_Landmark2') MainParser.AO = x; 
+			if (x.cityentity_id == 'X_OceanicFuture_Landmark3') MainParser.BG = x; 
+			return {[x.id]: x};}));
 		MainParser.SaveBuildings(MainParser.CityMapData);
 		MainParser.SetArkBonus2();
 		// Güterliste
@@ -942,6 +945,7 @@ let MainParser = {
 	fspID: null, 
 	aidID: null, 
 	AO: null, 
+	BG: null,
 
 	// all buildings additional data
 	BuildingUpgrades: null,
