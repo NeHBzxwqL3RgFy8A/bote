@@ -29,7 +29,9 @@ let Tooltips = {
     containerActive:false,
     targetElement:null,
     
-    init: () => {
+    init: async () => {
+        await StartUpDone
+
 		HTML.AddCssFile('customTooltip');
         let container = document.createElement("div");
         container.id = "TooltipContainer"
@@ -55,7 +57,9 @@ let Tooltips = {
 
         $('body').on("pointerleave",".helperTT",(e)=>{
             Tooltips.deactivate()
-        })        
+        })    
+        $(`<div id="QIActions" class="helperTT" data-callback_tt="QIActions.TT">${srcLinks.icons("time")}</div>`).appendTo('body').hide();    
+        $(`<div id="RewardsList"></div>`).appendTo('body');    
     },
 
     set: (content) => {
@@ -88,7 +92,8 @@ let Tooltips = {
         Tooltips.checkposition()
     },
     buildingTT: async (e)=>{
-        let id = e?.currentTarget?.dataset?.meta_id||MainParser?.CityMapData[e?.currentTarget?.dataset?.id]?.cityentity_id
+        let buildingId=e?.currentTarget?.dataset?.id
+        let id = e?.currentTarget?.dataset?.meta_id||MainParser?.CityMapData[buildingId]?.cityentity_id
         if (!id) return
 
         let era =  e?.currentTarget?.dataset?.era||Technologies.InnoEraNames[MainParser?.CityMapData[e?.currentTarget?.dataset?.id]?.level]
@@ -115,6 +120,28 @@ let Tooltips = {
         },100)
         return h
     },
+    genericEval: (rew) => {
+        let [x1,amount,name] = rew.name.match(/^([+\-]?\d*)x? (.*)$/)||["",1,rew.name]
+        amount = Number(amount)
+        let icon = ""
+        let fragment = ""
+        if (rew.iconAssetName=="icon_fragment") {
+            icon = srcLinks.icons(rew.assembledReward?.iconAssetName||rew.assembledReward?.subType)
+            name = name.replace(/Fragments? of/,"").replace(/.*?'(.*?)'.*/,"$1")
+            fragment = srcLinks.icons("icon_tooltip_fragment")
+        } else if (rew.type=="unit") {
+
+            name = /nextera/i.test(rew.id)? "of next era" : ""
+            
+            icon = srcLinks.icons(rew.subType=="rogue"?"rogue":(
+                rew.subType.includes("champion")?"chivalry":
+                Unit.Types.filter(x=>x.unitTypeId==rew.subType)[0].unitClass
+                ))
+        } else
+            icon = srcLinks.icons(rew.iconAssetName)
+        
+        return {icon:icon,amount:amount,name:name,fragment:fragment}
+    },  
     BuildingData:async (meta,onlyEra=null,allies=null)=>{
         if (onlyEra && Array.isArray(onlyEra)) {
             allies = [].concat(onlyEra)
@@ -126,7 +153,12 @@ let Tooltips = {
 		};
         let minEra = onlyEra||"BronzeAge"
         let maxEra = onlyEra||Technologies.EraNames[Technologies.getMaxEra()]
-        let goodsList = ["era_goods","random_good_of_age","all_goods_of_age", "random_good_of_age","random_good_of_age_1","random_good_of_age_2","random_good_of_age_3"]
+        let resMapper = (res,replace) => {
+            if (["era_goods","random_good_of_age","all_goods_of_age", "random_good_of_age","random_good_of_age_1","random_good_of_age_2","random_good_of_age_3"].includes(res)) return replace
+            if (res=="random_good_of_next_age") return "next_age_goods"
+            if (res=="random_special_good_up_to_age") return "special_goods"
+            return res
+        }
     
         let span = (x,withHighlight=false) => `<span ${withHighlight ? `class="${x>0 ? "positive" : "negative"}"`:''}>${numberWithCommas(x)}</span>`;
         let longSpan = (x) => `<div class="overflowBox"><span class="handleOverflow">${x}</span></div>`
@@ -145,31 +177,6 @@ let Tooltips = {
             return time
         }
         
-        let genericEval = (rew) => {
-            let [x1,amount,name] = rew.name.match(/^([+\-]?\d*)x? (.*)$/)||["",1,rew.name]
-            amount = Number(amount)
-            let icon = ""
-            let fragment = ""
-            if (rew.iconAssetName=="icon_fragment") {
-                icon = srcLinks.icons(rew.assembledReward?.iconAssetName||rew.assembledReward?.subType)
-                name = name.replace(/Fragments? of/,"").replace(/.*?'(.*?)'.*/,"$1")
-                fragment = srcLinks.icons("icon_tooltip_fragment")
-            } else if (rew.type=="unit") {
-
-                name = /nextera/i.test(rew.id)? "of next era" : ""
-                
-                icon = srcLinks.icons(rew.subType=="rogue"?"rogue":(
-                    rew.subType.includes("champion")?"chivalry":
-                    Unit.Types.filter(x=>x.unitTypeId==rew.subType)[0].unitClass
-                    ))
-            } else
-                icon = srcLinks.icons(rew.iconAssetName)
-            
-            return {icon:icon,amount:amount,name:name,fragment:fragment}
-        }    
-        
-
-        
         let capFirsts = (s) => {
             return s.replace("_"," ").replace(/(\b[a-z](?!\s))/g, function(x){return x.toUpperCase();});
         }
@@ -179,16 +186,6 @@ let Tooltips = {
             "battleground":"_gbg",
             "guild_expedition":"_gex",
             "guild_raids":"_gr"
-        }
-        let percent = (x) => {
-            return [
-                "diplomacy",
-                "guild_raids_action_points_collection",
-                "guild_raids_goods_start",
-                "guild_raids_units_start",
-                "guild_raids_supplies_start",
-                "guild_raids_coins_start",
-            ].includes(x) ? "" : "%"
         }
         let out='<table class="HXBuilding">';        
 
@@ -208,11 +205,11 @@ let Tooltips = {
             if (levels?.AllAge?.socialInteraction?.interactionType) {
                 if (levels?.AllAge?.socialInteraction?.interactionType == "motivate") {
                     motMod = `<span class="ifMot">${srcLinks.icons("reward_x2")+i18n("Boxes.Tooltip.Building.when")+srcLinks.icons("when_motivated")}</span>`
-                    traits+=`<tr><td><span>${srcLinks.icons("when_motivated")}</span>${i18n("Boxes.Tooltip.Building.canPolish")}</td></tr>`
+                    traits+=`<tr><td><span style="width:24px; margin-right:3px; text-align:center">${srcLinks.icons("when_motivated")}</span>${i18n("Boxes.Tooltip.Building.canMotivate")}</td></tr>`
                 }
                 else if (levels?.AllAge?.socialInteraction?.interactionType == "polish") {
                     polMod = `<span class="ifMot">${srcLinks.icons("reward_x2")+"when"+srcLinks.icons("when_motivated")}</span>`
-                    traits+=`<tr><td><span>${srcLinks.icons("when_motivated")}</span>${i18n("Boxes.Tooltip.Building.canMotivate")}</td></tr>`
+                    traits+=`<tr><td><span style="width:24px; margin-right:3px; text-align:center">${srcLinks.icons("when_motivated")}</span>${i18n("Boxes.Tooltip.Building.canPolish")}</td></tr>`
                 }
             }
             for (let a of meta.abilities||[]) {
@@ -227,7 +224,10 @@ let Tooltips = {
                 if (a.__class__=="AffectsEnvironmentAbility" && a.action?.type=="add_unique_inhabitant") 
                     traits += `<tr><td><img class="inhabitant" src="${srcLinks.get(`/city/inhabitants/${a.action.animationId}/${a.action.animationId}_south_00.png`,true)}">◄ ${i18n("Boxes.Tooltip.Building.addInhabitant")} (${capFirsts(a.action.animationId)})</td></tr>`
             }
-
+            if (levels?.AllAge?.cityLimit) {
+                traits+=`<tr><td>${srcLinks.icons("icon_unique_building")}${i18n("Boxes.Tooltip.Building.isUnique")}</td></tr>`
+            }
+            
             for (let r of levels.AllAge?.ally?.rooms || []) {
                 let allydata = null
                 for (a of allies||[]) {
@@ -235,12 +235,12 @@ let Tooltips = {
                     if (r.allyType == allydata.type && (!r.rarity?.value || r.rarity?.value == allydata.rarity)) break
                     allydata = null
                 }
-                ally += `<tr><td>${srcLinks.icons("historical_allies_slot_tooltip_icon_" + (allydata ? "full" :"empty"))}<div>${capFirsts(r.allyType) + (r.rarity?.value ? (" ("+i18n("Boxes.Productions.AllyRarity."+r.rarity?.value)+")"):"")}`
+                ally += `<tr><td>${srcLinks.icons("historical_allies_slot_tooltip_icon_" + (allydata ? "full" :"empty"))}<div>${MainParser.Allies.types[r.allyType]?.name + (r.rarity?.value ? (" ("+i18n("Boxes.Productions.AllyRarity."+r.rarity?.value)+")"):"")}`
                 if (allydata) {
-                    ally+=`<div class="allyName" style="color:${MainParser.Allies.rarities[allydata.rarity].textColor}"><span>${MainParser.Allies.names[allydata.allyId]}</span><span>(${i18n("Boxes.Productions.AllyRarity."+allydata.rarity)} - ${i18n("General.Level")} ${allydata.level})</span></div>`
+                    ally+=`<div class="allyName"><span>${MainParser.Allies.meta[allydata.allyId]?.name}</span><span>(${i18n("Boxes.Productions.AllyRarity."+allydata.rarity)} - ${i18n("General.Level")} ${allydata.level})</span></div>`
                     //productions:
-                    for (b of allydata.prod.boosts||[]) {
-                        ally+=`${srcLinks.icons(b.type+feature[b.targetedFeature])} ${b.value + percent(b.type)}`
+                    for (b of allydata.boosts||[]) {
+                        ally+=`${srcLinks.icons(b.type+feature[b.targetedFeature])} ${b.value + Boosts.percent(b.type)}`
                     }
 
                 }
@@ -276,29 +276,29 @@ let Tooltips = {
                 provides+=`<tr><td>${srcLinks.icons("happiness") + " " + range(levels?.[minEra]?.happiness?.provided,levels[maxEra]?.happiness?.provided,true) + polMod}</td></tr>`
             }
             for (let [i,b] of Object.entries(levels.AllAge?.boosts?.boosts||[])){
-                provides+=`<tr><td>${srcLinks.icons(b.type+feature[b.targetedFeature]) + " " + span(b.value) + percent(b.type)}</td></tr>`
+                provides+=`<tr><td>${srcLinks.icons(b.type+feature[b.targetedFeature]) + " " + span(b.value) + Boosts.percent(b.type)}</td></tr>`
             }
             
             for (let [i,b] of Object.entries(levels?.[minEra]?.boosts?.boosts||[])){
-                provides+=`<tr><td>${srcLinks.icons(b.type+feature[b.targetedFeature]) + " " + range(b.value,levels[maxEra]?.boosts?.boosts[i].value) + percent(b.type)}</td></tr>`
+                provides+=`<tr><td>${srcLinks.icons(b.type+feature[b.targetedFeature]) + " " + range(b.value,levels[maxEra]?.boosts?.boosts[i].value) + Boosts.percent(b.type)}</td></tr>`
             }
             
             let prods=""
             let pCount = levels.AllAge?.production?.options?.length || levels?.[minEra]?.production?.options?.length || 0
             
             for (let [oIndex,option] of Object.entries(levels.AllAge.production?.options||[])) {
-                let t = pCount>1 ? " in " + formatTime(option.time): ""
+                let t = pCount>1 ? "&nbsp;in " + formatTime(option.time): ""
                 for (let [pIndex,product] of Object.entries(option.products)) {
                     if (product.type == "resources") {
                         for (let [res,amount] of Object.entries(product.playerResources?.resources||{})) {
                             if (amount !=0) 
-                                prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"goods":res) + span(amount)+t  + ((["supplies","coins","money"].includes(res) && !product.onlyWhenMotivated) ? motMod : "") + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
+                                prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + span(amount)+t  + ((["supplies","coins","money"].includes(res) && !product.onlyWhenMotivated) ? motMod : "") + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
                         }
                     }
                     if (product.type == "guildResources") {
                         for (let [res,amount] of Object.entries(product.guildResources?.resources||{})) {
                             if (amount !=0) 
-                                prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"treasury_goods":res) + span(amount)+t + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
+                                prods+=`<tr><td>${srcLinks.icons(resMapper(res,"treasury_goods")) + span(amount)+t + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
                         }
                     }
                     if (product.type == "unit") {
@@ -311,7 +311,7 @@ let Tooltips = {
                         }
                     }
                     if (product.type == "genericReward") {
-                        let rew = genericEval(levels.AllAge.lookup.rewards[product.reward.id])
+                        let rew = Tooltips.genericEval(levels.AllAge.lookup.rewards[product.reward.id])
                         prods+=`<tr><td class="isGeneric">${rew.icon + span(rew.amount) + rew.fragment + longSpan(rew.name) + t + (product.onlyWhenMotivated ? ifMot : "")}</td></tr>`
                     }
                     if (product.type=="random") {
@@ -321,13 +321,13 @@ let Tooltips = {
                             if (random.product.type == "resources") {
                                 for (let [res,amount] of Object.entries(random.product.playerResources?.resources||{})) {
                                     if (amount !=0) 
-                                        prods+=srcLinks.icons(goodsList.includes(res)?"goods":res) + span(amount)
+                                        prods+=srcLinks.icons(resMapper(res,"goods")) + span(amount)
                                 }
                             }
                             if (random.product.type == "guildResources") {
                                 for (let [res,amount] of Object.entries(random.product.guildResources?.resources||{})) {
                                     if (amount !=0) 
-                                        prods+=srcLinks.icons(goodsList.includes(res)?"treasury_goods":res) + span(amount)
+                                        prods+=srcLinks.icons(resMapper(res,"treasury_goods")) + span(amount)
                                 }
                             }
                             if (random.product.type == "unit") {
@@ -340,7 +340,7 @@ let Tooltips = {
                                 }
                             }
                             if (random.product.type == "genericReward") {
-                                let rew=genericEval(levels.AllAge.lookup.rewards[random.product.reward.id])
+                                let rew=Tooltips.genericEval(levels.AllAge.lookup.rewards[random.product.reward.id])
                                 prods += rew.icon + span(rew.amount) + rew.fragment + longSpan(rew.name)
                             }
                             prods+=`<span class="dropChance">${Math.floor(random.dropChance*100)}%</span></td></tr>`
@@ -350,18 +350,18 @@ let Tooltips = {
                 }
             }
             for (let [oIndex,option] of Object.entries(levels?.[minEra]?.production?.options||[])) {
-                let t = pCount>1 ? " in " + formatTime(option.time): ""
+                let t = pCount>1 ? "&nbsp;in " + formatTime(option.time): ""
                 for (let [pIndex,product] of Object.entries(option.products)) {
                     if (product.type == "resources") {
                         for (let [res,amount] of Object.entries(product.playerResources?.resources||{})) {
                             if (amount !=0) 
-                                prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"goods":res) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.playerResources?.resources?.[res])+t  + ((["supplies","coins","money"].includes(res) && !product.onlyWhenMotivated) ? motMod : "") + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
+                                prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.playerResources?.resources?.[res])+t  + ((["supplies","coins","money"].includes(res) && !product.onlyWhenMotivated) ? motMod : "") + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
                         }
                     }
                     if (product.type == "guildResources") {
                         for (let [res,amount] of Object.entries(product.guildResources?.resources||{})) {
                             if (amount !=0) 
-                                prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"treasury_goods":res) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.guildResources?.resources?.[res])+t + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
+                                prods+=`<tr><td>${srcLinks.icons(resMapper(res,"treasury_goods")) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.guildResources?.resources?.[res])+t + (product.onlyWhenMotivated?ifMot:"")}</td></tr>`
                         }
                     }
                     if (product.type == "unit") {
@@ -374,8 +374,8 @@ let Tooltips = {
                         }
                     }
                     if (product.type == "genericReward") {
-                        let rewBA=genericEval(levels?.[minEra].lookup.rewards[product.reward.id])
-                        let rewMax=genericEval(levels[maxEra].lookup.rewards[levels[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.reward?.id])
+                        let rewBA=Tooltips.genericEval(levels?.[minEra].lookup.rewards[product.reward.id])
+                        let rewMax=Tooltips.genericEval(levels[maxEra].lookup.rewards[levels[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.reward?.id])
                         
                         if (rewBA.icon+rewBA.name==rewMax.icon+rewMax.name) {
                             prods+=`<tr><td class="isGeneric">${rewBA.icon + range(rewBA.amount,rewMax.amount) + rewBA.fragment + longSpan(rewBA.name) + t + (product.onlyWhenMotivated ? ifMot : "")}</td></tr>`
@@ -390,13 +390,13 @@ let Tooltips = {
                             if (random.product.type == "resources") {
                                 for (let [res,amount] of Object.entries(random.product.playerResources?.resources||{})) {
                                     if (amount !=0) 
-                                        prods+=srcLinks.icons(goodsList.includes(res)?"goods":res) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.products?.[rIndex]?.product?.playerResources?.resources?.[res])
+                                        prods+=srcLinks.icons(resMapper(res,"goods")) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.products?.[rIndex]?.product?.playerResources?.resources?.[res])
                                 }
                             }
                             if (random.product.type == "guildResources") {
                                 for (let [res,amount] of Object.entries(random.product.guildResources?.resources||{})) {
                                     if (amount !=0) 
-                                        prods+=srcLinks.icons(goodsList.includes(res)?"treasury_goods":res) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.products?.[rIndex]?.product?.guildResources?.resources?.[res])
+                                        prods+=srcLinks.icons(resMapper(res,"treasury_goods")) + range(amount,levels?.[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.products?.[rIndex]?.product?.guildResources?.resources?.[res])
                                 }
                             }
                             if (random.product.type == "unit") {
@@ -409,8 +409,8 @@ let Tooltips = {
                                 }
                             }
                             if (random.product.type == "genericReward") {
-                                let rewBA=genericEval(levels?.[minEra].lookup.rewards[random.product.reward.id])
-                                let rewMax=genericEval(levels[maxEra].lookup.rewards[levels[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.products?.[rIndex]?.product?.reward?.id])
+                                let rewBA=Tooltips.genericEval(levels?.[minEra].lookup.rewards[random.product.reward.id])
+                                let rewMax=Tooltips.genericEval(levels[maxEra].lookup.rewards[levels[maxEra]?.production?.options?.[oIndex]?.products?.[pIndex]?.products?.[rIndex]?.product?.reward?.id])
                                 
                                 if (rewBA.icon+rewBA.name==rewMax.icon+rewBA.name) {
                                     prods+=rewBA.icon + range(rewBA.amount,rewMax.amount) + rewBA.fragment + longSpan(rewBA.name)
@@ -486,11 +486,11 @@ let Tooltips = {
                     set =srcLinks.icons(a.setId) + MainParser.BuildingSets[a.setId].name
                 }
                 if (a.__class__=="PolishableAbility") {
-                    traits+=`<tr><td><span>${srcLinks.icons("when_motivated")}</span>can be polished</td></tr>`
+                    traits+=`<tr><td><span style="width:24px; margin-right:3px; text-align:center">${srcLinks.icons("when_motivated")}</span>can be polished</td></tr>`
                     polMod = `<span class="ifMot">${srcLinks.icons("reward_x2")+i18n("Boxes.Tooltip.Building.when")+srcLinks.icons("when_motivated")}</span>`
                 }
                 if (a.__class__ == "MotivatableAbility") {
-                    traits+=`<tr><td><span>${srcLinks.icons("when_motivated")}</span>can be motivated</td></tr>`
+                    traits+=`<tr><td><span style="width:24px; margin-right:3px; text-align:center">${srcLinks.icons("when_motivated")}</span>can be motivated</td></tr>`
                     motMod = `<span class="ifMot">${srcLinks.icons("reward_x2")+i18n("Boxes.Tooltip.Building.when")+srcLinks.icons("when_motivated")}</span>`
                 }
                 if (a.__class__ == "AddCoinsToSupplyProductionWhenMotivatedAbility") {
@@ -510,10 +510,10 @@ let Tooltips = {
                 if (a.boostHints){
                     for (let b of a.boostHints||[]){
                         if (b.boostHintEraMap?.AllAge) {
-                            boosts+=`<tr><td>${srcLinks.icons(b.boostHintEraMap.AllAge.type+feature[b.boostHintEraMap.AllAge.targetedFeature]) + " " + span(b.boostHintEraMap.AllAge.value) + percent(b.boostHintEraMap.AllAge.type)}</td></tr>`
+                            boosts+=`<tr><td>${srcLinks.icons(b.boostHintEraMap.AllAge.type+feature[b.boostHintEraMap.AllAge.targetedFeature]) + " " + span(b.boostHintEraMap.AllAge.value) + Boosts.percent(b.boostHintEraMap.AllAge.type)}</td></tr>`
                         }
                         if (b.boostHintEraMap?.[minEra] && b.boostHintEraMap?.[maxEra]) {
-                            boosts+=`<tr><td>${srcLinks.icons(b.boostHintEraMap?.[minEra].type+feature[b.boostHintEraMap?.[minEra].targetedFeature]) + " " + range(b.boostHintEraMap?.[minEra].value,b.boostHintEraMap[maxEra].value) + percent(b.boostHintEraMap?.[minEra].type)}</td></tr>`
+                            boosts+=`<tr><td>${srcLinks.icons(b.boostHintEraMap?.[minEra].type+feature[b.boostHintEraMap?.[minEra].targetedFeature]) + " " + range(b.boostHintEraMap?.[minEra].value,b.boostHintEraMap[maxEra].value) + Boosts.percent(b.boostHintEraMap?.[minEra].type)}</td></tr>`
                         }
                     }
                 }
@@ -561,13 +561,12 @@ let Tooltips = {
                 for (let p of meta.available_products) {
                     for (let [res,amount] of Object.entries(p.product?.resources||{})) {
                         if (res=="money" && levels?.[minEra]?.produced_money) continue
-                        let t=(meta?.available_products?.length!=1) ? " in "+formatTime(p.production_time): ""
+                        let t=(meta?.available_products?.length!=1) ? "&nbsp;in "+formatTime(p.production_time): ""
                         
-                        if (goodsList.includes(res)) res="goods"
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(res) + span(amount)+t + motMod}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + span(amount)+t + motMod}</td></tr>`
                         else
-                            prods+=`<tr><td>${srcLinks.icons(res) + range(levels?.[minEra].production_values[p.production_option-1].value,levels?.[maxEra].production_values[p.production_option-1].value)+t + motMod}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + range(levels?.[minEra].production_values[p.production_option-1].value,levels?.[maxEra].production_values[p.production_option-1].value)+t + motMod}</td></tr>`
                     }
                     if (p.unit_class) {
                         prods+=`<tr><td>${srcLinks.icons(p.unit_class) + p.name}</td></tr>`
@@ -576,31 +575,31 @@ let Tooltips = {
                 for (let a of abilityList.AddResourcesAbility||[]) {
                     for (let [res,amount] of Object.entries(a.additionalResources?.[minEra]?.resources||{})) {
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"goods":res) + range(a.additionalResources?.[minEra].resources[res],a.additionalResources[maxEra].resources[res])}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + range(a.additionalResources?.[minEra].resources[res],a.additionalResources[maxEra].resources[res])}</td></tr>`
                     }
                     for (let [res,amount] of Object.entries(a.additionalResources?.AllAge?.resources||{})) {
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"goods":res) + span(amount)}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + span(amount)}</td></tr>`
                         }
                 }
                 for (let a of abilityList.AddResourcesToGuildTreasuryAbility||[]) {
                     for (let [res,amount] of Object.entries(a.additionalResources?.[minEra]?.resources||{})) {
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"treasury_goods":res) + range(a.additionalResources?.[minEra].resources[res],a.additionalResources[maxEra].resources[res])}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"treasury_goods")) + range(a.additionalResources?.[minEra].resources[res],a.additionalResources[maxEra].resources[res])}</td></tr>`
                     }
                     for (let [res,amount] of Object.entries(a.additionalResources?.AllAge?.resources||{})) {
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"treasury_goods":res) + span(amount)}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"treasury_goods")) + span(amount)}</td></tr>`
                         }
                 }
                 for (let a of abilityList.AddResourcesWhenMotivatedAbility||[]) {
                     for (let [res,amount] of Object.entries(a.additionalResources?.[minEra]?.resources||{})) {
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"goods":res) + range(a.additionalResources?.[minEra].resources[res],a.additionalResources[maxEra].resources[res])+ifMot}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + range(a.additionalResources?.[minEra].resources[res],a.additionalResources[maxEra].resources[res])+ifMot}</td></tr>`
                     }
                     for (let [res,amount] of Object.entries(a.additionalResources?.AllAge?.resources||{})) {
                         if (amount !=0) 
-                            prods+=`<tr><td>${srcLinks.icons(goodsList.includes(res)?"goods":res) + span(amount)+ifMot}</td></tr>`
+                            prods+=`<tr><td>${srcLinks.icons(resMapper(res,"goods")) + span(amount)+ifMot}</td></tr>`
                         }
                 }
                 for (let a of abilityList.RandomUnitOfAgeWhenMotivatedAbility||[]) {
@@ -634,21 +633,21 @@ let Tooltips = {
                     if (Object.values(b.boost).length>0) {
                         boosts+=`<tr><td>${b.level + "x" + srcLinks.icons(a.setId)} ► `
                         if (b.boost.AllAge) {
-                            boosts+=srcLinks.icons(b.boost.AllAge.type+feature[b.boost.AllAge.targetedFeature]) + " " + span(b.boost.AllAge.value) + percent(b.boost.AllAge.type)
+                            boosts+=srcLinks.icons(b.boost.AllAge.type+feature[b.boost.AllAge.targetedFeature]) + " " + span(b.boost.AllAge.value) + Boosts.percent(b.boost.AllAge.type)
                         }
                         if (b.boost?.[minEra] && b.boost[maxEra]) {
-                            boosts+=srcLinks.icons(b.boost?.[minEra].type+feature[b.boost?.[minEra].targetedFeature]) + " " + range(b.boost?.[minEra].value,b.boost[maxEra].value) + percent(b.boost?.[minEra].type)
+                            boosts+=srcLinks.icons(b.boost?.[minEra].type+feature[b.boost?.[minEra].targetedFeature]) + " " + range(b.boost?.[minEra].value,b.boost[maxEra].value) + Boosts.percent(b.boost?.[minEra].type)
                         }
                         boosts+=`</td></tr>`
                     } else {
                         prods+=`<tr><td>${b.level + "x" + srcLinks.icons(a.setId)} ► `
                         if (b.revenue?.AllAge) {
                             let [res,amount] = Object.entries(b.revenue?.AllAge?.resources)[0]
-                            prods+=srcLinks.icons(goodsList.includes(res)?"goods":res) + span(amount)
+                            prods+=srcLinks.icons(resMapper(res,"goods")) + span(amount)
                         }
                         if (b.revenue?.[minEra] && b.revenue?.[maxEra]) {
                             let [res,amount] = Object.entries(b.revenue?.[minEra]?.resources)[0]
-                            prods+=srcLinks.icons(goodsList.includes(res)?"goods":res) + range(amount,b.revenue?.[maxEra].resources[res])
+                            prods+=srcLinks.icons(resMapper(res,"goods")) + range(amount,b.revenue?.[maxEra].resources[res])
                         }
                         prods+=`</td></tr>`
                     }
@@ -664,10 +663,10 @@ let Tooltips = {
                         }
                         boosts+=`<tr><td>${b.level + "x" + srcLinks.icons(a.chainId)} ► `
                         if (b.boost.AllAge) {
-                            boosts+=srcLinks.icons(b.boost.AllAge.type+feature[b.boost.AllAge.targetedFeature]) + " " + span(b.boost.AllAge.value) + percent(b.boost.AllAge.type)
+                            boosts+=srcLinks.icons(b.boost.AllAge.type+feature[b.boost.AllAge.targetedFeature]) + " " + span(b.boost.AllAge.value) + Boosts.percent(b.boost.AllAge.type)
                         }
                         if (b.boost?.[minEra] && b.boost[maxEra]) {
-                            boosts+=srcLinks.icons(b.boost?.[minEra].type+feature[b.boost?.[minEra].targetedFeature]) + " " + range(b.boost?.[minEra].value,b.boost[maxEra].value) + percent(b.boost?.[minEra].type)
+                            boosts+=srcLinks.icons(b.boost?.[minEra].type+feature[b.boost?.[minEra].targetedFeature]) + " " + range(b.boost?.[minEra].value,b.boost[maxEra].value) + Boosts.percent(b.boost?.[minEra].type)
                         }
                         boosts+=`</td></tr>`
 
@@ -679,11 +678,11 @@ let Tooltips = {
                         prods+=`<tr><td>${b.level + "x" + srcLinks.icons(a.chainId)} ► `
                         if (b.revenue?.AllAge) {
                             let [res,amount] = Object.entries(b.revenue?.AllAge?.resources)[0]
-                            prods+=srcLinks.icons(goodsList.includes(res)?"goods":res) + span(amount)
+                            prods+=srcLinks.icons(resMapper(res,"goods")) + span(amount)
                         }
                         if (b.revenue?.[minEra] && b.revenue?.[maxEra]) {
                             let [res,amount] = Object.entries(b.revenue?.[minEra]?.resources)[0]
-                            prods+=srcLinks.icons(goodsList.includes(res)?"goods":res) + range(amount,b.revenue?.[maxEra].resources[res])
+                            prods+=srcLinks.icons(resMapper(res,"goods")) + range(amount,b.revenue?.[maxEra].resources[res])
                         }
                         prods+=`</td></tr>`
                     }
@@ -717,5 +716,82 @@ let Tooltips = {
         return out;
     },
 }
+
+
+//QI Actions
+
+FoEproxy.addFoeHelperHandler('ResourcesUpdated', () => {
+	QIActions.count = ResourceStock.guild_raids_action_points || 0
+});
+
+FoEproxy.addHandler('ResourceService', 'getPlayerAutoRefills', (data, postData) => {
+	QIActions.setNext(data.responseData.resources.guild_raids_action_points)
+});
+
+FoEproxy.addFoeHelperHandler('ActiveMapUpdated',()=>{
+	if (ActiveMap=="guild_raids") {
+		$('#QIActions').show();
+	} else {
+		$('#QIActions').hide();
+	}
+})
+
+
+let QIActions = {
+	count:0,
+	next:null,
+	last:null,
+
+	setNext:(time)=>{
+		let timer=3600000
+		
+		let hourly = 5000 + Boosts.Sums["guild_raids_action_points_collection"] 
+
+		if (time) { 
+			timer = (time-GameTime.get()+3600)*1000
+			QIActions.last = time
+		} else {
+			let amount = Math.floor((moment().unix() - QIActions.last + 10)/3600)
+			QIActions.count = Math.min(QIActions.count + amount*hourly,100000)
+			QIActions.last += 3600*amount
+			timer = (QIActions.last - moment().unix() + 3600)*1000
+		} 
+
+		if (QIActions.next) clearTimeout(QIActions.next)
+		
+		QIActions.next = setTimeout(QIActions.setNext,timer)
+
+	},
+
+	TT:()=>{
+		let hourly = 5000 + Boosts.Sums["guild_raids_action_points_collection"] 
+		let fullAt = Math.ceil((100000-QIActions.count)/hourly)*3600 + QIActions.last
+		let next = QIActions.last + 3600
+		while (next < moment().unix()) next += 3600
+
+		tooltip=`<div style="text-align:center">`
+        tooltip+=`<h1>${i18n("Global.BoxTitle")}</h1>`
+		tooltip+=`<p style="margin: 3px">${srcLinks.icons("guild_raids_action_points")}&nbsp;${hourly} ${moment.unix(next).fromNow()}</p>`
+		tooltip+=`<h2>${i18n("Boxes.QIActions.FullAt")}</h2>`
+		tooltip+=`<p>${moment.unix(fullAt).format('lll')}</p></div>`
+
+		return tooltip
+	}
+}
+
+//GBG Rewards Stream
+FoEproxy.addHandler('RewardService', 'collectReward', async (data, postData) => {
+	if (!Settings.GetSetting("ShowGBGRewards")) return
+    if (!Array.isArray(data.responseData)) return
+	var [rewards, rewardIncidentSource] = data.responseData; 
+    if (rewardIncidentSource!="battlegrounds_conquest") return
+    
+    for (let reward of rewards) {
+        let rew = Tooltips.genericEval(reward);
+        $(`<span>${reward.amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")} ${rew.fragment}${rew.icon}</span>`).appendTo("#RewardsList").fadeOut(10000, function(){ $(this).remove();})
+    }
+
+});
+
 
 Tooltips.init()

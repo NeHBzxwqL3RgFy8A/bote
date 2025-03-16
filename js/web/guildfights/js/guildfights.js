@@ -511,7 +511,8 @@ let GuildFights = {
 				dragdrop: true,
 				resize: true,
 				minimize: true,
-				settings: 'GuildFights.ShowLiveFightSettings()'
+				settings: 'GuildFights.ShowLiveFightSettings()',
+			    active_maps:"gg"
 			});
 
 			// add css to the dom
@@ -544,9 +545,14 @@ let GuildFights = {
 				dragdrop: true,
 				minimize: true,
 				resize: true,
-				settings: 'GuildFights.ShowPlayerBoxSettings()'
+				settings: 'GuildFights.ShowPlayerBoxSettings()',
+			    active_maps:"gg"
 			});
 			HTML.AddCssFile('guildfights');
+		}
+			
+		if (Settings.GetSetting('ShowGBGPlayerInfo') == false) {
+			$('#GildPlayers').css({'display': 'none'})
 		}
 
 		GuildFights.BuildPlayerContent(GuildFights.CurrentGBGRound);
@@ -559,8 +565,7 @@ let GuildFights = {
 	 */
 	ShowDetailViewBox: (d) => {
 		// Wenn die Box noch nicht da ist, neu erzeugen und in den DOM packen
-		if ($('#GildPlayersDetailView').length === 0)
-		{
+		if ($('#GildPlayersDetailView').length === 0) {
 			let ptop = null,
 				pright = null;
 
@@ -570,16 +575,15 @@ let GuildFights = {
 				auto_close: true,
 				dragdrop: true,
 				minimize: true,
-				resize: true
+				resize: true,
+			    active_maps:"gg"
 			});
 
-			if (localStorage.getItem('GildPlayersDetailViewCords') === null)
-			{
+			if (localStorage.getItem('GildPlayersDetailViewCords') === null) {
 				ptop = $('#GildPlayers').length !== 0 ? $('#GildPlayers').position().top : 0;
 				pright = $('#GildPlayers').length !== 0 ? ($('#GildPlayers').position().left + $('#GildPlayers').width() + 10) : 0;
 				$('#GildPlayersDetailView').css('top', ptop + 'px').css('left', (pright * 1) + 'px');
 			}
-
 		}
 
 		GuildFights.BuildDetailViewContent(d);
@@ -587,7 +591,7 @@ let GuildFights = {
 
 
 	/**
-	 * Built the player content content
+	 * Build the player content content
 	 * @param gbground
 	 * @returns {Promise<void>}
 	 */
@@ -604,8 +608,7 @@ let GuildFights = {
 			})
 			.first();
 
-		if (CurrentSnapshot === undefined)
-		{
+		if (CurrentSnapshot === undefined) {
 			newRound = true;
 			// if there is a new GBG round delete previous snapshots
 			GuildFights.DeleteOldSnapshots(GuildFights.CurrentGBGRound);
@@ -629,8 +632,7 @@ let GuildFights = {
 			total: 'total'
 		});
 
-		if (gbground && gbground !== null && gbground !== GuildFights.CurrentGBGRound)
-		{
+		if (gbground && gbground !== null && gbground !== GuildFights.CurrentGBGRound) {
 
 			let d = await GuildFights.db.history.where({ gbground: gbground }).toArray();
 			GuildFights.GBGRound = d[0].participation.sort(function (a, b) {
@@ -639,17 +641,12 @@ let GuildFights = {
 			histView = true;
 
 		}
-		else
-		{
+		else {
 			GuildFights.GBGRound = GuildFights.NewAction;
 		}
 
-		for (let i in GuildFights.GBGRound)
-		{
-			if (!GuildFights.GBGRound.hasOwnProperty(i))
-			{
-				break;
-			}
+		for (let i in GuildFights.GBGRound) {
+			if (!GuildFights.GBGRound.hasOwnProperty(i)) break;
 
 			let playerNew = GuildFights.GBGRound[i];
 
@@ -663,14 +660,12 @@ let GuildFights = {
 				change = false;
 
 			// is there an older snapshot available?
-			if (GuildFights.PrevAction !== null && histView === false)
-			{
+			if (GuildFights.PrevAction !== null && histView === false) {
 
 				let playerOld = GuildFights.PrevAction.find(p => (p['player_id'] === playerNew['player_id']));
 
 				// Is there any data on this player?
-				if (playerOld !== undefined)
-				{
+				if (playerOld !== undefined) {
 
 					if (playerOld['negotiationsWon'] < playerNew['negotiationsWon'])
 					{
@@ -772,7 +767,7 @@ let GuildFights = {
 		t.push('<th class="text-center" data-export="Negotiations"><span class="negotiation" title="' + HTML.i18nTooltip(i18n('Boxes.GuildFights.Negotiations')) + '"></span> <strong class="text-warning">(' + HTML.Format(tN) + ')</strong></th>');
 		t.push('<th class="text-center" data-export="Fights"><span class="fight" title="' + HTML.i18nTooltip(i18n('Boxes.GuildFights.Fights')) + '"></span> <strong class="text-warning">(' + HTML.Format(tF) + ')</strong></th>');
 		t.push('<th class="text-center" data-export="Total">' + i18n('Boxes.GuildFights.Total') + ' <strong class="text-warning">(' + HTML.Format(tNF) + ')</strong></th>');
-		t.push('<th class="text-center">' + i18n('Boxes.GuildFights.Attrition') + ' <strong class="text-warning">(' + HTML.Format(tA) + ')</strong></th>');
+		t.push('<th class="text-center" data-export="Attrition">' + i18n('Boxes.GuildFights.Attrition') + ' <strong class="text-warning">(' + HTML.Format(tA) + ')</strong></th>');
 
 		t.push('<th></th>');
 		t.push('</tr>');
@@ -1172,7 +1167,7 @@ let GuildFights = {
 			// If sectors doesnt belong to anyone
 			if (mapdata[i]['ownerId'] === undefined && mapdata[i]['conquestProgress'].length > 0) {
 				progress.push(`<tr id="province-${id}" data-id="${id}" data-tab="progress">`);
-				progress.push(`<td><b><span class="province-color" style="background-color:#555"></span> ${GuildFights.MapData['title']}</b></td>`);
+				progress.push(`<td><b><span class="province-color" style="background-color:#555"></span> ${mapdata[i]['title']}</b></td>`);
 
 				if (GuildFights.showGuildColumn)
 					progress.push(`<td><em>${i18n('Boxes.GuildFights.NoOwner')}</em></td>`);
@@ -1252,7 +1247,7 @@ let GuildFights = {
 			if (showCountdowns) {
 				let countDownDate = moment.unix(prov[x]['lockedUntil'] - 2),
 					color = GuildFights.SortedColors.find(e => e['id'] === prov[x]['ownerId']),
-					battleType = prov[x].isAttackBattleType ? '🔴' : '🔵',
+					battleType = prov[x].isAttackBattleType ? 'BTattack' : 'BTdefence',
 					intervalID = setInterval(() => {
 						GuildFights.UpdateCounter(countDownDate, intervalID, prov[x]['id']);
 					}, 1000);
@@ -1260,7 +1255,7 @@ let GuildFights = {
 				nextup.push(`<tr id="timer-${prov[x]['id']}" class="timer" data-tab="nextup" data-id=${prov[x]['id']}>`);
 				nextup.push(`<td class="prov-name" title="${i18n('Boxes.GuildFights.Owner')}: ${prov[x]['owner']}">`)
 				nextup.push(`<span class="province-color" ${color['main'] ? 'style="background-color:' + color['main'] + '"' : ''}"></span> `)
-				nextup.push(`<span class="smaller">${battleType}</span>`)
+				nextup.push(`<span class="battletype ${battleType}"></span>`)
 				nextup.push(` <b>${prov[x]['title']}</b> `)
 				nextup.push(`</td>`);
 
@@ -1808,7 +1803,8 @@ let ProvinceMap = {
 				auto_close: true,
 				dragdrop: true,
 				minimize: true,
-				resize: true
+				resize: true,
+			    active_maps:"gg"
 			});
 
 			// add css to the dom

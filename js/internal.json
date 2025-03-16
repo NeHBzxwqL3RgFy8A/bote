@@ -10,6 +10,7 @@
 	"indexdb",
 	"kits",
 	"outposts",
+	"profile",
 	"calculator",
 	"infoboard",
 	"productions",
@@ -67,5 +68,6 @@
 	"gbg",
 	"fsp", 
 	"customTooltip",
-	"reconstruction"
+	"reconstruction",
+	"boosts"
 ]

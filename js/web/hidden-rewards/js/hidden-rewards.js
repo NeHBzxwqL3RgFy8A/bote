@@ -21,8 +21,8 @@ FoEproxy.addHandler('HiddenRewardService', 'getOverview', (data, postData) => {
     if (HiddenRewards.FirstCycle) { //Timer setzen 
         HiddenRewards.FirstCycle = false;
         data.responseData.hiddenRewards.forEach(x=>{
-            if (x.startTime && x.startTime>GameTime) 
-                setTimeout(HiddenRewards.RefreshGui, (x.startTime+5-GameTime)*1000)
+            if (x.startTime && x.startTime>GameTime.get()) 
+                setTimeout(HiddenRewards.RefreshGui, (x.startTime+5-GameTime.get())*1000)
         })
     }
 });
@@ -72,7 +72,8 @@ let HiddenRewards = {
                 'dragdrop': true,
                 'minimize': true,
                 'resize': true,
-                'settings': 'HiddenRewards.ShowSettingsButton()'
+                'settings': 'HiddenRewards.ShowSettingsButton()',
+			    active_maps:"main"
             });
 
             //moment.locale(18n('Local'));
