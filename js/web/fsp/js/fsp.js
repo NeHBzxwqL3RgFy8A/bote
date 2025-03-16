@@ -223,16 +223,22 @@ FoEproxy.addHandler('CityMapService', 'updateEntity', (data, postData) => {
 FoEproxy.addHandler('CityProductionService', 'pickupProduction', (data, postData) => {
     fsp.fspID = MainParser.fspID;
     fsp.aidID = MainParser.aidID;
-    fsp.aoID = MainParser.BG.id;
-	//fsp.bgID = MainParser.BG.id;
+    
+	fsp.aoID = MainParser.AO.id;
+    fsp.plyrID = MainParser.AO.player_id;
+    fsp.lvl = MainParser.AO.level;
+    fsp.mx_lvl = MainParser.AO.max_level;
+    fsp.currFP = MainParser.AO.state.invested_forge_points;
+    fsp.maxFP = MainParser.AO.state.forge_points_for_level_up;
+	/*
+	fsp.aoID = MainParser.BG.id;
     fsp.plyrID = MainParser.BG.player_id;
     fsp.lvl = MainParser.BG.level;
     fsp.mx_lvl = MainParser.BG.max_level;
     fsp.currFP = MainParser.BG.state.invested_forge_points;
     fsp.maxFP = MainParser.BG.state.forge_points_for_level_up;
-
+	*/
     fsp.targID = postData[0].requestData[0][0];
-
     if ($('#fspMenu').length === 0) {
         fsp.Show();
     } 
