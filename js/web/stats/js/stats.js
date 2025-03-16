@@ -23,16 +23,6 @@ FoEproxy.addHandler('GuildBattlegroundStateService', 'getState', async (data, po
 		Stats.HandlePlayerLeaderboard(data.responseData['playerLeaderboardEntries']);
 	}
 });
-//Currently in Outpost
-var isCurrentlyInOutpost = 0;
-FoEproxy.addHandler('CityMapService', 'getCityMap', async (data, postData) => {
-	if (data.responseData['gridId'] === 'cultural_outpost') {
-		isCurrentlyInOutpost=1;
-	}
-});
-FoEproxy.addHandler('CityMapService', 'getEntities', async (data, postData) => {
-		isCurrentlyInOutpost=0;
-});
 
 // Reward log
 FoEproxy.addHandler('RewardService', 'collectReward', async (data, postData) => {
@@ -46,12 +36,11 @@ FoEproxy.addHandler('RewardService', 'collectReward', async (data, postData) => 
 	if (rewardIncidentSource == "event_pass") {
 		if (postData[0].requestData[0].indexOf('guild_raids') >=0) rewardIncidentSource = 'guild_raids'
 	}
-
 	for (let reward of rewards) {
 
 		if (rewardIncidentSource === 'hidden_reward') {
 			//split flying island incidents from Ad-chests
-			if (isCurrentlyInOutpost === 1){
+			if (ActiveMap == 'cultural_outpost'){
 				rewardIncidentSource = 'shards';
 			}
 		}
@@ -78,7 +67,6 @@ FoEproxy.addHandler('RewardService', 'collectReward', async (data, postData) => 
 			delete reward.__class__;
 			await IndexDB.db.statsRewardTypes.put(reward);
 		}
-
 		// Add reward incident record
 
 		await Stats.addReward(rewardIncidentSource, reward.amount ||0, reward.id);

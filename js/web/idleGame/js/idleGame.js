@@ -257,7 +257,8 @@ let idleGame = {
             auto_close: true,
             dragdrop: true,
             minimize: true,
-			resize : true
+			resize : true,
+			active_maps:"main",
         });
 
         let htmltext = `<table id="idleGame_Table" style="width:100%"><tr><th colspan="2">`;
@@ -534,9 +535,10 @@ let idleGame = {
 		}
 
 		let text_nexttown = `${i18n('Boxes.idleGame.NextTown')} ${Tt} ${idleGame.iGNums[Td]}: `
-		text_nexttown += `${idleGame.time(Tt,Td,sum,degree,idleGame.Progress,idleGame.ProgressDegree,fest,festd)}<br/>` 
-		text_nexttown += `${idleGame.finishTownDiscount*Tt} ${idleGame.iGNums[Td]}: `
-		text_nexttown += `${idleGame.time(idleGame.finishTownDiscount*Tt,Td,sum,degree,idleGame.Progress,idleGame.ProgressDegree,fest,festd)}`;
+		text_nexttown += `${idleGame.time(Tt,Td,sum,degree,idleGame.Progress,idleGame.ProgressDegree,fest,festd)}<br/>`
+		let discounted = Math.round(idleGame.finishTownDiscount * Tt * 100) / 100
+		text_nexttown += `${discounted} ${idleGame.iGNums[Td]}: `
+		text_nexttown += `${idleGame.time(discounted,Td,sum,degree,idleGame.Progress,idleGame.ProgressDegree,fest,festd)}`;
 		
 		
 		$('#idleGame_Town').html(`${text_currentrun}<br/>${text_nexttown}`);

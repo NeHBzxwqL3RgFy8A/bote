@@ -89,9 +89,14 @@ let QiProgress = {
 				dragdrop: true,
 				minimize: true,
 				resize: true,
-				settings: 'QiProgress.ShowSettings()'
+				settings: 'QiProgress.ShowSettings()',
+			    active_maps:"guild_raids"
 			});
 			HTML.AddCssFile('qiprogress');
+		}
+			
+		if (Settings.GetSetting('ShowQIPlayerInfo') == false) {
+			$('#QiProgressList').css({'display': 'none'})
 		}
 
 		QiProgress.BuildProgressList(QiProgress.CurrentQISeason);
@@ -331,7 +336,8 @@ let QiProgress = {
 				auto_close: true,
 				dragdrop: true,
 				minimize: true,
-				resize: true
+				resize: true,
+			    active_maps:"guild_raids"
 			});
 
 			if (localStorage.getItem('QiProgressPlayerDetailsCords') === null) {

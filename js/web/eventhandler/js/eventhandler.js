@@ -259,9 +259,10 @@ let EventHandler = {
 				// get the correct 24h time
 				if(match['groups']['half'])
 				{
-					if(match['groups']['half'] === 'am' && h < 12)
-					{
+					if(match['groups']['half'] === 'pm' && h !== 12) {
 						h += 12;
+					} else if (match['groups']['half'] === 'am' && h === 12) {
+						h = 0;
 					}
 				}
 
@@ -278,7 +279,7 @@ let EventHandler = {
 						break;
 					case 'date':
 						moment.locale(OldLocale);
-						refDate = moment(match['groups']['d'],moment.defaultFormat)
+						refDate = moment([Number(match['groups']['year'])+2000,Number(match['groups']['month'])-1,Number(match['groups']['day'])])
 						break;
 					default:
 						refDate = moment().day(capitalize(day));
@@ -675,7 +676,7 @@ let EventHandler = {
 				friday    	: /Freitag um (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
 				saturday  	: /Samstag um (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
 				sunday   	: /Sonntag um (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
-				date	   	: /am (?<d>.*?) um (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
+				date	   	: /am (?<day>.*?)\.(?<month>.*?)\.(?<year>.*?) um (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
 			},
 			en: {
 				today     : /today at (?<h>[012]?\d):(?<m>[0-5]?\d) (?<half>(a|p)m)/g,
@@ -687,7 +688,7 @@ let EventHandler = {
 				friday    : /Friday at (?<h>[012]?\d):(?<m>[0-5]?\d) (?<half>(a|p)m)/g,
 				saturday  : /Saturday at (?<h>[012]?\d):(?<m>[0-5]?\d) (?<half>(a|p)m)/g,
 				sunday    : /Sunday at (?<h>[012]?\d):(?<m>[0-5]?\d) (?<half>(a|p)m)/g,
-				date      : /on (?<d>.*?) at (?<h>[012]?\d):(?<m>[0-5]?\d) (?<half>(a|p)m)/g,
+				date      : /on (?<month>.*?)\/(?<day>.*?)\/(?<year>.*?) at (?<h>[012]?\d):(?<m>[0-5]?\d) (?<half>(a|p)m)/g,
 			},
 			pt: {
 				today     : /hoje às (?<h>[012]?\d):(?<m>[0-5]?\d)( horas)?/g,
@@ -721,7 +722,7 @@ let EventHandler = {
 				friday    : /Vendredi à (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
 				saturday  : /Samedi à (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
 				sunday    : /Dimanche à (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
-				date 	  : /le (?<d>.*?) à (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
+				date 	  : /le (?<day>.*?)\/(?<month>.*?)\/(?<year>.*?) à (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
 			},
 			it: {
 				today     : /oggi alle (?<h>[012]?\d):(?<m>[0-5]?\d)/g,
